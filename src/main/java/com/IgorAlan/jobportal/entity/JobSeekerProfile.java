@@ -13,6 +13,7 @@ public class JobSeekerProfile {
 
     @OneToOne
     @JoinColumn(name = "user_account_id")
+    @MapsId
     private Users userId;
 
     private String firstName;
