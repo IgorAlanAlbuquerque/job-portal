@@ -24,3 +24,12 @@ hs_err_pid*
 replay_pid*
 
 photos/
+
+target/
+
+.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/MavenWrapperDownloader.java
+
+.idea/
