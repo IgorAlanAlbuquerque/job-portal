@@ -6,8 +6,10 @@ import com.IgorAlan.jobportal.repository.JobPostActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class JobPostActivityService {
@@ -23,20 +25,31 @@ public class JobPostActivityService {
         return jobPostActivityRepository.save(jobPostActivity);
     }
 
-    public List<RecruiterJobsDto> getRecruiterJobs(int recruiter){
+    public List<RecruiterJobsDto> getRecruiterJobs(int recruiter) {
+
         List<IRecruiterJobs> recruiterJobsDtos = jobPostActivityRepository.getRecruiterJobs(recruiter);
 
-        List<RecruiterJobsDto> recruiterJobsDtosList = new ArrayList<>();
+        List<RecruiterJobsDto> recruiterJobsDtoList = new ArrayList<>();
 
-        for(IRecruiterJobs rec : recruiterJobsDtos){
+        for (IRecruiterJobs rec : recruiterJobsDtos) {
             JobLocation loc = new JobLocation(rec.getState(), rec.getLocationId(), rec.getCity(), rec.getCountry());
-            JobCompany company = new JobCompany("", rec.getName(), rec.getCompanyId());
-            recruiterJobsDtosList.add(new RecruiterJobsDto(company, loc, rec.getJob_title(), rec.getJob_post_id(), rec.getTotalCandidates()));
+            JobCompany comp = new JobCompany("", rec.getName(), rec.getCompanyId());
+            recruiterJobsDtoList.add(new RecruiterJobsDto(comp, loc, rec.getJob_title(), rec.getJob_post_id(), rec.getTotalCandidates()));
         }
-        return recruiterJobsDtosList;
+        return recruiterJobsDtoList;
+
     }
 
     public JobPostActivity getOne(int id) {
-        return jobPostActivityRepository.findById(id).orElseThrow(() -> new RuntimeException("Job Post Activity Not Found"));
+        return jobPostActivityRepository.findById(id).orElseThrow(()->new RuntimeException("Job not found"));
+    }
+
+    public List<JobPostActivity> getAll() {
+        return jobPostActivityRepository.findAll();
+    }
+
+    public List<JobPostActivity> search(String job, String location, List<String> type, List<String> remote, LocalDate searchDate) {
+        return Objects.isNull(searchDate) ? jobPostActivityRepository.searchWithoutDate(job, location, remote,type) :
+                jobPostActivityRepository.search(job, location, remote, type, searchDate);
     }
 }

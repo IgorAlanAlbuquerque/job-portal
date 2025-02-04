@@ -41,45 +41,55 @@ public class UsersService {
         users.setPassword(passwordEncoder.encode(users.getPassword()));
         Users savedUser = usersRepository.save(users);
         int userTypeId = users.getUserTypeId().getUserTypeId();
-        if(userTypeId == 1){
+
+        if (userTypeId == 1) {
             recruiterProfileRepository.save(new RecruiterProfile(savedUser));
-        }else{
+        }
+        else {
             jobSeekerProfileRepository.save(new JobSeekerProfile(savedUser));
         }
-        return savedUser;
-    }
 
-    public Optional<Users> getUserByEmail(String email) {
-        return usersRepository.findByEmail(email);
+        return savedUser;
     }
 
     public Object getCurrentUserProfile() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(!(authentication instanceof AnonymousAuthenticationToken)){
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String username = authentication.getName();
-            Users users = usersRepository.findByEmail(username).
-                    orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            Users users = usersRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("Could not found " + "user"));
             int userId = users.getUserId();
-            if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))){
-                return recruiterProfileRepository.findById(userId).
-                        orElse(new RecruiterProfile());
-            }else{
-                return jobSeekerProfileRepository.findById(userId).
-                        orElse(new JobSeekerProfile());
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
+                RecruiterProfile recruiterProfile = recruiterProfileRepository.findById(userId).orElse(new RecruiterProfile());
+                return recruiterProfile;
+            } else {
+                JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(userId).orElse(new JobSeekerProfile());
+                return jobSeekerProfile;
             }
         }
+
         return null;
     }
 
     public Users getCurrentUser() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!(authentication instanceof AnonymousAuthenticationToken)){
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String username = authentication.getName();
-            return usersRepository.findByEmail(username).
-                    orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            Users user = usersRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Could not found " + "user"));
+            return user;
         }
+
         return null;
+    }
+
+    public Users findByEmail(String currentUsername) {
+        return usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not " +
+                "found"));
+    }
+
+    public Optional<Users> getUserByEmail(String email) {
+        return usersRepository.findByEmail(email);
     }
 }
