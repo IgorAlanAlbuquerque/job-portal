@@ -37,3 +37,4 @@ O **Job Portal** é um sistema desenvolvido em Java com o framework Springboot p
    ```
 5. Acesse a aplicação no navegador: `http://localhost:8080`
 
+![Schema do Banco de Dados](jobportal-database-schema.png)
