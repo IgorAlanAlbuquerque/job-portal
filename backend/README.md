@@ -25,6 +25,7 @@ O **Job Portal** é um sistema desenvolvido em Java com o framework Springboot p
 2. Navegue até o diretório do projeto:
    ```bash
    cd java-job-portal
+   cd backend
    ```
 3. Configure o banco de dados:
    ```bash
