@@ -8,18 +8,16 @@ import com.IgorAlan.jobportal.services.JobPostActivityService;
 import com.IgorAlan.jobportal.services.JobSeekerProfileService;
 import com.IgorAlan.jobportal.services.JobSeekerSaveService;
 import com.IgorAlan.jobportal.services.UsersService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/job-seeker")
 public class JobSeekerSaveController {
 
     private final UsersService usersService;
@@ -35,7 +33,7 @@ public class JobSeekerSaveController {
     }
 
     @PostMapping("job-details/save/{id}")
-    public String save(@PathVariable("id") int id, JobSeekerSave jobSeekerSave) {
+    public ResponseEntity<?> save(@PathVariable("id") int id, JobSeekerSave jobSeekerSave) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -47,27 +45,30 @@ public class JobSeekerSaveController {
                 jobSeekerSave.setJob(jobPostActivity);
                 jobSeekerSave.setUserId(seekerProfile.get());
             } else {
-                throw new RuntimeException("User not found");
+                return ResponseEntity.status(404).body("User or Job Post not found");
             }
             jobSeekerSaveService.addNew(jobSeekerSave);
+            return ResponseEntity.status(201).body("Job saved successfully");
         }
-        return "redirect:/dashboard/";
+        return ResponseEntity.status(401).body("Unauthorized");
     }
 
     @GetMapping("saved-jobs/")
-    public String savedJobs(Model model) {
+    public ResponseEntity<?> savedJobs() {
 
-        List<JobPostActivity> jobPost = new ArrayList<>();
         Object currentUserProfile = usersService.getCurrentUserProfile();
 
-        List<JobSeekerSave> jobSeekerSaveList = jobSeekerSaveService.getCandidatesJob((JobSeekerProfile) currentUserProfile);
-        for (JobSeekerSave jobSeekerSave : jobSeekerSaveList) {
-            jobPost.add(jobSeekerSave.getJob());
+        if (currentUserProfile == null) {
+            return ResponseEntity.status(404).body("User profile not found");
         }
 
-        model.addAttribute("jobPost", jobPost);
-        model.addAttribute("user", currentUserProfile);
+        List<JobSeekerSave> jobSeekerSaveList = jobSeekerSaveService.getCandidatesJob((JobSeekerProfile) currentUserProfile);
+        List<JobPostActivity> jobPostList = new ArrayList<>();
 
-        return "saved-jobs";
+        for (JobSeekerSave jobSeekerSave : jobSeekerSaveList) {
+            jobPostList.add(jobSeekerSave.getJob());
+        }
+
+        return ResponseEntity.ok(jobPostList);  // Return the list of saved jobs as JSON
     }
 }

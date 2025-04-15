@@ -6,23 +6,19 @@ import com.IgorAlan.jobportal.entity.Users;
 import com.IgorAlan.jobportal.repository.UsersRepository;
 import com.IgorAlan.jobportal.services.RecruiterProfileService;
 import com.IgorAlan.jobportal.util.FileUploadUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/recruiter-profile/")
 public class RecruiterProfileController {
 
@@ -35,37 +31,42 @@ public class RecruiterProfileController {
     }
 
     @GetMapping("/")
-    public String recruiterProfile(Model model) {
+    public ResponseEntity<?> getRecruiterProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(!(auth instanceof AnonymousAuthenticationToken)){
+        if (!(auth instanceof AnonymousAuthenticationToken)) {
             String currentUserName = auth.getName();
-            Users users = usersRepository.findByEmail(currentUserName).orElseThrow(() -> new
-                    UsernameNotFoundException("Could not found user"));
+            Users users = usersRepository.findByEmail(currentUserName)
+                    .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
             Optional<RecruiterProfile> recruiterProfile = recruiterProfileService.getOne(users.getUserId());
 
-            if (!recruiterProfile.isEmpty())
-                model.addAttribute("profile", recruiterProfile.get());
+            if (recruiterProfile.isPresent()) {
+                return ResponseEntity.ok(recruiterProfile.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         }
-
-        return "recruiter_profile";
+        return ResponseEntity.status(401).body("Unauthorized");
     }
 
     @PostMapping("/addNew")
-    public String addNew(RecruiterProfile recruiterProfile, @RequestParam("image") MultipartFile multipartFile, Model model) {
+    public ResponseEntity<?> addNew(@RequestBody RecruiterProfile recruiterProfile,
+                                    @RequestParam("image") MultipartFile multipartFile) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            Users users = usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("Could not " + "found user"));
+            Users users = usersRepository.findByEmail(currentUsername)
+                    .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
             recruiterProfile.setUserId(users);
             recruiterProfile.setUserAccountId(users.getUserId());
         }
-        model.addAttribute("profile", recruiterProfile);
+
         String fileName = "";
         if (!multipartFile.getOriginalFilename().equals("")) {
             fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
             recruiterProfile.setProfilePhoto(fileName);
         }
+
         RecruiterProfile savedUser = recruiterProfileService.addNew(recruiterProfile);
 
         String uploadDir = "photos/recruiter/" + savedUser.getUserAccountId();
@@ -73,8 +74,9 @@ public class RecruiterProfileController {
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
         } catch (Exception ex) {
             ex.printStackTrace();
+            return ResponseEntity.status(500).body("Error uploading file");
         }
 
-        return "redirect:/dashboard/";
+        return ResponseEntity.status(201).body(savedUser); // Returning the created profile
     }
 }
