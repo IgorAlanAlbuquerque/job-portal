@@ -4,21 +4,17 @@ package com.IgorAlan.jobportal.controller;
 import com.IgorAlan.jobportal.entity.*;
 import com.IgorAlan.jobportal.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/job-seeker-apply")
 public class JobSeekerApplyController {
 
     private final JobPostActivityService jobPostActivityService;
@@ -40,67 +36,70 @@ public class JobSeekerApplyController {
     }
 
     @GetMapping("job-details-apply/{id}")
-    public String display(@PathVariable("id") int id, Model model) {
+    public ResponseEntity<?> display(@PathVariable("id") int id) {
         JobPostActivity jobDetails = jobPostActivityService.getOne(id);
+        if (jobDetails == null) {
+            return ResponseEntity.status(404).body("Job post not found");
+        }
+
         List<JobSeekerApply> jobSeekerApplyList = jobSeekerApplyService.getJobCandidates(jobDetails);
         List<JobSeekerSave> jobSeekerSaveList = jobSeekerSaveService.getJobCandidates(jobDetails);
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
-                RecruiterProfile user = recruiterProfileService.getCurrentRecruiterProfile();
-                if (user != null) {
-                    model.addAttribute("applyList", jobSeekerApplyList);
-                }
-            } else {
-                JobSeekerProfile user = jobSeekerProfileService.getCurrentSeekerProfile();
-                if (user != null) {
-                    boolean exists = false;
-                    boolean saved = false;
-                    for (JobSeekerApply jobSeekerApply : jobSeekerApplyList) {
-                        if (jobSeekerApply.getUserId().getUserAccountId() == user.getUserAccountId()) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    for (JobSeekerSave jobSeekerSave : jobSeekerSaveList) {
-                        if (jobSeekerSave.getUserId().getUserAccountId() == user.getUserAccountId()) {
-                            saved = true;
-                            break;
-                        }
-                    }
-                    model.addAttribute("alreadyApplied", exists);
-                    model.addAttribute("alreadySaved", saved);
-                }
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
+            RecruiterProfile recruiter = recruiterProfileService.getCurrentRecruiterProfile();
+            if (recruiter != null) {
+                return ResponseEntity.ok(Collections.singletonMap("applyList", jobSeekerApplyList));
+            }
+        } else {
+            JobSeekerProfile jobSeekerProfile = jobSeekerProfileService.getCurrentSeekerProfile();
+            if (jobSeekerProfile != null) {
+                boolean exists = jobSeekerApplyList.stream()
+                        .anyMatch(apply -> apply.getUserId().getUserAccountId() == jobSeekerProfile.getUserAccountId());
+                boolean saved = jobSeekerSaveList.stream()
+                        .anyMatch(save -> save.getUserId().getUserAccountId() == jobSeekerProfile.getUserAccountId());
+
+                Map<String, Boolean> response = new HashMap<>();
+                response.put("alreadyApplied", exists);
+                response.put("alreadySaved", saved);
+                return ResponseEntity.ok(response);
             }
         }
 
-        JobSeekerApply jobSeekerApply = new JobSeekerApply();
-        model.addAttribute("applyJob", jobSeekerApply);
-
-        model.addAttribute("jobDetails", jobDetails);
-        model.addAttribute("user", usersService.getCurrentUserProfile());
-        return "job-details";
+        return ResponseEntity.status(400).body("Invalid request");
     }
 
     @PostMapping("job-details/apply/{id}")
-    public String apply(@PathVariable("id") int id, JobSeekerApply jobSeekerApply) {
+    public ResponseEntity<?> apply(@PathVariable("id") int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String currentUsername = authentication.getName();
-            Users user = usersService.findByEmail(currentUsername);
-            Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
-            JobPostActivity jobPostActivity = jobPostActivityService.getOne(id);
-            if (seekerProfile.isPresent() && jobPostActivity != null) {
-                jobSeekerApply = new JobSeekerApply();
-                jobSeekerApply.setUserId(seekerProfile.get());
-                jobSeekerApply.setJob(jobPostActivity);
-                jobSeekerApply.setApplyDate(new Date());
-            } else {
-                throw new RuntimeException("User not found");
-            }
-            jobSeekerApplyService.addNew(jobSeekerApply);
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        return "redirect:/dashboard/";
+        String currentUsername = authentication.getName();
+        Users user = usersService.findByEmail(currentUsername);
+        if (user == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
+        JobPostActivity jobPostActivity = jobPostActivityService.getOne(id);
+
+        if (seekerProfile.isPresent() && jobPostActivity != null) {
+            JobSeekerApply jobSeekerApply = new JobSeekerApply();
+            jobSeekerApply.setUserId(seekerProfile.get());
+            jobSeekerApply.setJob(jobPostActivity);
+            jobSeekerApply.setApplyDate(new Date());
+
+            jobSeekerApplyService.addNew(jobSeekerApply);
+
+            return ResponseEntity.status(201).body("Application submitted successfully");
+        }
+
+        return ResponseEntity.status(400).body("Error applying for the job");
     }
 }
