@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,12 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    private String firstName;
+    private String lastName;
+    private String city;
+    private String state;
+    private String country;
 
     @Column(nullable = false)
     private String password;

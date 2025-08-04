@@ -31,12 +31,17 @@ public class JobSeekerApply {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_id")
-    private JobPostActivity job;
+    private Job job;
 
     @Column(updatable = false)
     private LocalDateTime applyDate;
 
     private String coverLetter;
+
+    public JobSeekerApply(JobSeekerProfile profile, Job job) {
+        this.profile = profile;
+        this.job = job;
+    }
 
     @PrePersist
     protected void onCreate() {

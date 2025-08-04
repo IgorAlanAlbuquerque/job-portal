@@ -27,11 +27,6 @@ public class JobSeekerProfile {
     @JoinColumn(name = "user_account_id")
     private User user;
 
-    private String firstName;
-    private String lastName;
-    private String city;
-    private String state;
-    private String country;
     private String workAuthorization;
     private String employmentType;
     private String resume;

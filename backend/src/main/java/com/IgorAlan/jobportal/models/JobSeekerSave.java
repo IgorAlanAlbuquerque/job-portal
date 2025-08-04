@@ -28,5 +28,10 @@ public class JobSeekerSave {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_id")
-    private JobPostActivity job;
+    private Job job;
+
+    public JobSeekerSave(JobSeekerProfile profile, Job job) {
+        this.profile = profile;
+        this.job = job;
+    }
 }

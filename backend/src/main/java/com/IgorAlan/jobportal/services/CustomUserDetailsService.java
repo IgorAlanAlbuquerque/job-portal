@@ -2,11 +2,13 @@ package com.IgorAlan.jobportal.services;
 
 import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.UserRepository;
-import com.IgorAlan.jobportal.util.CustomUserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -18,8 +20,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User users = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Could not find user " + username));
-        return new CustomUserDetails(users);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getUserType().getUserTypeName());
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                Collections.singletonList(authority)
+        );
     }
 }

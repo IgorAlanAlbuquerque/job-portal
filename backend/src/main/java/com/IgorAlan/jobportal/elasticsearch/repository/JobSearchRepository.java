@@ -7,14 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
-import com.IgorAlan.jobportal.elasticsearch.document.JobPostDocument;
+import com.IgorAlan.jobportal.elasticsearch.document.JobDocument;
 
 @Repository
-public interface JobSearchRepository extends ElasticsearchRepository<JobPostDocument, Long> {
+public interface JobSearchRepository extends ElasticsearchRepository<JobDocument, Long> {
 
-    Page<JobPostDocument> findByJobTitleContainsOrDescriptionContains(String title, String description, Pageable pageable);
+    Page<JobDocument> findByJobTitleContainsOrDescriptionContains(String title, String description, Pageable pageable);
 
-    Page<JobPostDocument> findByJobTitleContainsOrDescriptionContainsAndCityAndJobTypeIn(
+    Page<JobDocument> findByJobTitleContainsOrDescriptionContainsAndCityAndJobTypeIn(
             String keyword, String city, List<String> jobTypes, Pageable pageable
     );
 }

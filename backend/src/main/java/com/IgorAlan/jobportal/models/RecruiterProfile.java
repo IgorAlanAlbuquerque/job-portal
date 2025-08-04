@@ -24,13 +24,6 @@ public class RecruiterProfile {
     @MapsId
     private User user;
 
-    private  String firstName;
-    private String lastName;
-    private String city;
-    private String state;
-    private String country;
-    private String company;
-
     @Column(nullable = true, length = 64)
     private String profilePhoto;
 
