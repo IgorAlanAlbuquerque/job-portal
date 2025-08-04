@@ -1,13 +1,12 @@
 package com.IgorAlan.jobportal.controller;
 
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
-import com.IgorAlan.jobportal.entity.Skills;
-import com.IgorAlan.jobportal.entity.Users;
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+import com.IgorAlan.jobportal.models.Skills;
+import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.UsersRepository;
 import com.IgorAlan.jobportal.services.JobSeekerProfileService;
 import com.IgorAlan.jobportal.util.FileDownloadUtil;
 import com.IgorAlan.jobportal.util.FileUploadUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,7 +32,6 @@ public class JobSeekerProfileController {
 
     private final UsersRepository usersRepository;
 
-    @Autowired
     public JobSeekerProfileController(JobSeekerProfileService jobSeekerProfileService, UsersRepository usersRepository) {
         this.jobSeekerProfileService = jobSeekerProfileService;
         this.usersRepository = usersRepository;
@@ -46,7 +44,7 @@ public class JobSeekerProfileController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        Users user = usersRepository.findByEmail(authentication.getName())
+        User user = usersRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
 
@@ -63,15 +61,15 @@ public class JobSeekerProfileController {
 
     @PostMapping("/addNew")
     public ResponseEntity<?> addNew(@RequestBody JobSeekerProfile jobSeekerProfile,
-                                    @RequestParam("image") MultipartFile image,
-                                    @RequestParam("pdf") MultipartFile pdf) {
+                                    @RequestParam MultipartFile image,
+                                    @RequestParam MultipartFile pdf) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        Users user = usersRepository.findByEmail(authentication.getName())
+        User user = usersRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         jobSeekerProfile.setUserId(user);
         jobSeekerProfile.setUserAccountId(user.getUserId());
@@ -111,7 +109,7 @@ public class JobSeekerProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> candidateProfile(@PathVariable("id") int id) {
+    public ResponseEntity<?> candidateProfile(@PathVariable Long id) {
         Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(id);
         if (seekerProfile.isPresent()) {
             return ResponseEntity.ok(seekerProfile.get());
@@ -120,7 +118,7 @@ public class JobSeekerProfileController {
     }
 
     @GetMapping("/downloadResume")
-    public ResponseEntity<?> downloadResume(@RequestParam("fileName") String fileName, @RequestParam("userID") String userId) {
+    public ResponseEntity<?> downloadResume(@RequestParam String fileName, @RequestParam("userID") String userId) {
         FileDownloadUtil downloadUtil = new FileDownloadUtil();
         Resource resource;
 

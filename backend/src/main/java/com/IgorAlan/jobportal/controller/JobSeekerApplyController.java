@@ -1,9 +1,8 @@
 package com.IgorAlan.jobportal.controller;
 
 
-import com.IgorAlan.jobportal.entity.*;
+import com.IgorAlan.jobportal.models.*;
 import com.IgorAlan.jobportal.services.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ public class JobSeekerApplyController {
     private final JobSeekerProfileService jobSeekerProfileService;
 
 
-    @Autowired
     public JobSeekerApplyController(JobPostActivityService jobPostActivityService, UsersService usersService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService, RecruiterProfileService recruiterProfileService, JobSeekerProfileService jobSeekerProfileService) {
         this.jobPostActivityService = jobPostActivityService;
         this.usersService = usersService;
@@ -36,7 +34,7 @@ public class JobSeekerApplyController {
     }
 
     @GetMapping("job-details-apply/{id}")
-    public ResponseEntity<?> display(@PathVariable("id") int id) {
+    public ResponseEntity<?> display(@PathVariable Long id) {
         JobPostActivity jobDetails = jobPostActivityService.getOne(id);
         if (jobDetails == null) {
             return ResponseEntity.status(404).body("Job post not found");
@@ -74,14 +72,14 @@ public class JobSeekerApplyController {
     }
 
     @PostMapping("job-details/apply/{id}")
-    public ResponseEntity<?> apply(@PathVariable("id") int id) {
+    public ResponseEntity<?> apply(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
         String currentUsername = authentication.getName();
-        Users user = usersService.findByEmail(currentUsername);
+        User user = usersService.findByEmail(currentUsername);
         if (user == null) {
             return ResponseEntity.status(404).body("User not found");
         }

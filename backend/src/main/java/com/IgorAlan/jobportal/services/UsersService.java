@@ -1,12 +1,11 @@
 package com.IgorAlan.jobportal.services;
 
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
-import com.IgorAlan.jobportal.entity.RecruiterProfile;
-import com.IgorAlan.jobportal.entity.Users;
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+import com.IgorAlan.jobportal.models.RecruiterProfile;
+import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.JobSeekerProfileRepository;
 import com.IgorAlan.jobportal.repository.RecruiterProfileRepository;
 import com.IgorAlan.jobportal.repository.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +25,6 @@ public class UsersService {
     private final RecruiterProfileRepository recruiterProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
     public UsersService(UsersRepository usersRepository, JobSeekerProfileRepository jobSeekerProfileRepository,
                         RecruiterProfileRepository recruiterProfileRepository, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
@@ -35,12 +33,12 @@ public class UsersService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Users addNew(Users users) {
+    public User addNew(User users) {
         users.setActive(true);
         users.setRegistrationDate(new Date(System.currentTimeMillis()));
         users.setPassword(passwordEncoder.encode(users.getPassword()));
-        Users savedUser = usersRepository.save(users);
-        int userTypeId = users.getUserTypeId().getUserTypeId();
+        User savedUser = usersRepository.save(users);
+        Long userTypeId = users.getUserTypeId().getUserTypeId();
 
         if (userTypeId == 1) {
             recruiterProfileRepository.save(new RecruiterProfile(savedUser));
@@ -58,8 +56,8 @@ public class UsersService {
 
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String username = authentication.getName();
-            Users users = usersRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("Could not found " + "user"));
-            int userId = users.getUserId();
+            User users = usersRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("Could not found " + "user"));
+            Long userId = users.getUserId();
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
                 RecruiterProfile recruiterProfile = recruiterProfileRepository.findById(userId).orElse(new RecruiterProfile());
                 return recruiterProfile;
@@ -72,24 +70,24 @@ public class UsersService {
         return null;
     }
 
-    public Users getCurrentUser() {
+    public User getCurrentUser() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String username = authentication.getName();
-            Users user = usersRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Could not found " + "user"));
+            User user = usersRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Could not found " + "user"));
             return user;
         }
 
         return null;
     }
 
-    public Users findByEmail(String currentUsername) {
+    public User findByEmail(String currentUsername) {
         return usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not " +
                 "found"));
     }
 
-    public Optional<Users> getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         return usersRepository.findByEmail(email);
     }
 }

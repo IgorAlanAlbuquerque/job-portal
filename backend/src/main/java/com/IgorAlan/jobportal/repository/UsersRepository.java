@@ -1,12 +1,13 @@
 package com.IgorAlan.jobportal.repository;
 
-import com.IgorAlan.jobportal.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.IgorAlan.jobportal.models.User;
 
 import java.util.Optional;
 
-public interface UsersRepository extends JpaRepository<Users, Integer> {
+public interface UsersRepository extends JpaRepository<User, Integer> {
 
-    Optional<Users> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
 }

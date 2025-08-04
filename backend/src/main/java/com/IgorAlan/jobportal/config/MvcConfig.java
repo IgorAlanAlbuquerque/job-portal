@@ -5,7 +5,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
@@ -18,7 +17,7 @@ public class MvcConfig implements WebMvcConfigurer {
     }
 
     private void exposeDirectory(String uploadDir, ResourceHandlerRegistry registry) {
-        Path path = Paths.get(uploadDir);
+        Path path = Path.of(uploadDir);
         registry.addResourceHandler("/" + uploadDir + "/**").addResourceLocations("file:" + path.toAbsolutePath() + "/");
     }
 }

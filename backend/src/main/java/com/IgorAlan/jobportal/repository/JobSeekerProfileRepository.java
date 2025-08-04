@@ -1,7 +1,12 @@
 package com.IgorAlan.jobportal.repository;
 
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+
 public interface JobSeekerProfileRepository extends JpaRepository<JobSeekerProfile, Integer> {
+
+    Optional<JobSeekerProfile> findById(Long id);
 }

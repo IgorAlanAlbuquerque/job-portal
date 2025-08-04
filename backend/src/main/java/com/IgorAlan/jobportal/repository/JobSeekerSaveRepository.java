@@ -1,10 +1,11 @@
 package com.IgorAlan.jobportal.repository;
 
-import com.IgorAlan.jobportal.entity.JobPostActivity;
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
-import com.IgorAlan.jobportal.entity.JobSeekerSave;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.IgorAlan.jobportal.models.JobPostActivity;
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+import com.IgorAlan.jobportal.models.JobSeekerSave;
 
 import java.util.List;
 

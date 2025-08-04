@@ -1,14 +1,14 @@
-package com.IgorAlan.jobportal.entity;
+package com.IgorAlan.jobportal.models;
 
 public interface IRecruiterJobs {
 
     Long getTotalCandidates();
 
-    int getJob_post_id();
+    Long getJob_post_id();
 
     String getJob_title();
 
-    int getLocationId();
+    Long getLocationId();
 
     String getCity();
 
@@ -16,7 +16,7 @@ public interface IRecruiterJobs {
 
     String getCountry();
 
-    int getCompanyId();
+    Long getCompanyId();
 
     String getName();
 }

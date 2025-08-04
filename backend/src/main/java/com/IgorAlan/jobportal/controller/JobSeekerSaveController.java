@@ -1,9 +1,9 @@
 package com.IgorAlan.jobportal.controller;
 
-import com.IgorAlan.jobportal.entity.JobPostActivity;
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
-import com.IgorAlan.jobportal.entity.JobSeekerSave;
-import com.IgorAlan.jobportal.entity.Users;
+import com.IgorAlan.jobportal.models.JobPostActivity;
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+import com.IgorAlan.jobportal.models.JobSeekerSave;
+import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.services.JobPostActivityService;
 import com.IgorAlan.jobportal.services.JobSeekerProfileService;
 import com.IgorAlan.jobportal.services.JobSeekerSaveService;
@@ -33,12 +33,12 @@ public class JobSeekerSaveController {
     }
 
     @PostMapping("job-details/save/{id}")
-    public ResponseEntity<?> save(@PathVariable("id") int id, JobSeekerSave jobSeekerSave) {
+    public ResponseEntity<?> save(@PathVariable Long id, JobSeekerSave jobSeekerSave) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            Users user = usersService.findByEmail(currentUsername);
+            User user = usersService.findByEmail(currentUsername);
             Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
             JobPostActivity jobPostActivity = jobPostActivityService.getOne(id);
             if (seekerProfile.isPresent() && jobPostActivity != null) {

@@ -1,7 +1,7 @@
 package com.IgorAlan.jobportal.services;
 
-import com.IgorAlan.jobportal.entity.JobSeekerProfile;
-import com.IgorAlan.jobportal.entity.Users;
+import com.IgorAlan.jobportal.models.JobSeekerProfile;
+import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.JobSeekerProfileRepository;
 import com.IgorAlan.jobportal.repository.UsersRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -23,7 +23,7 @@ public class JobSeekerProfileService {
         this.usersRepository = usersRepository;
     }
 
-    public Optional<JobSeekerProfile> getOne(Integer id) {
+    public Optional<JobSeekerProfile> getOne(Long id) {
         return jobSeekerProfileRepository.findById(id);
     }
 
@@ -35,7 +35,7 @@ public class JobSeekerProfileService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            Users users = usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            User users = usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not found"));
             Optional<JobSeekerProfile> seekerProfile = getOne(users.getUserId());
             return seekerProfile.orElse(null);
         } else return null;

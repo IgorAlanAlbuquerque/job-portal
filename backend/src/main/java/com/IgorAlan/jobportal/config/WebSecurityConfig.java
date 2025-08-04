@@ -1,7 +1,6 @@
 package com.IgorAlan.jobportal.config;
 
 import com.IgorAlan.jobportal.services.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,9 +18,8 @@ public class WebSecurityConfig {
 
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Autowired
     public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
-                             CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+                            CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
@@ -42,7 +40,7 @@ public class WebSecurityConfig {
             "/fonts**", "/favicon.ico", "/resources/**", "/error"};
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authenticationProvider(authenticationProvider());
 
@@ -62,7 +60,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setUserDetailsService(customUserDetailsService);
@@ -70,7 +68,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

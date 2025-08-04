@@ -1,13 +1,12 @@
 package com.IgorAlan.jobportal.controller;
 
-import com.IgorAlan.jobportal.entity.Users;
-import com.IgorAlan.jobportal.entity.UsersType;
+import com.IgorAlan.jobportal.models.User;
+import com.IgorAlan.jobportal.models.UserType;
 import com.IgorAlan.jobportal.services.UsersService;
 import com.IgorAlan.jobportal.services.UsersTypeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +22,6 @@ public class UsersController {
     private final UsersTypeService usersTypeService;
     private final UsersService usersService;
 
-    @Autowired
     public UsersController(UsersTypeService usersTypeService, UsersService usersService) {
         this.usersTypeService = usersTypeService;
         this.usersService = usersService;
@@ -31,14 +29,14 @@ public class UsersController {
 
     @GetMapping("/register")
     public ResponseEntity<?> getRegisterPage() {
-        List<UsersType> usersTypes = usersTypeService.getAllUsersTypes();
+        List<UserType> usersTypes = usersTypeService.getAllUsersTypes();
         return ResponseEntity.ok(usersTypes);
     }
 
     @PostMapping("/register/new")
-    public ResponseEntity<?> userRegister(@Valid @RequestBody Users user) {
+    public ResponseEntity<?> userRegister(@Valid @RequestBody User user) {
 
-        Optional<Users> optionalUsers = usersService.getUserByEmail(user.getEmail());
+        Optional<User> optionalUsers = usersService.getUserByEmail(user.getEmail());
 
         if (optionalUsers.isPresent()) {
             return ResponseEntity.badRequest().body("Email already registered");

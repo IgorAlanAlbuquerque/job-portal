@@ -1,6 +1,6 @@
 package com.IgorAlan.jobportal.services;
 
-import com.IgorAlan.jobportal.entity.UsersType;
+import com.IgorAlan.jobportal.models.UserType;
 import com.IgorAlan.jobportal.repository.UsersTypeRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class UsersTypeService {
         this.usersTypeRepository = usersTypeRepository;
     }
 
-    public List<UsersType> getAllUsersTypes() {
+    public List<UserType> getAllUsersTypes() {
         return usersTypeRepository.findAll();
     }
 }

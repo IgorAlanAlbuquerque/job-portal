@@ -1,8 +1,8 @@
 package com.IgorAlan.jobportal.controller;
 
 
-import com.IgorAlan.jobportal.entity.RecruiterProfile;
-import com.IgorAlan.jobportal.entity.Users;
+import com.IgorAlan.jobportal.models.RecruiterProfile;
+import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.UsersRepository;
 import com.IgorAlan.jobportal.services.RecruiterProfileService;
 import com.IgorAlan.jobportal.util.FileUploadUtil;
@@ -35,7 +35,7 @@ public class RecruiterProfileController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             String currentUserName = auth.getName();
-            Users users = usersRepository.findByEmail(currentUserName)
+            User users = usersRepository.findByEmail(currentUserName)
                     .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
             Optional<RecruiterProfile> recruiterProfile = recruiterProfileService.getOne(users.getUserId());
 
@@ -55,7 +55,7 @@ public class RecruiterProfileController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            Users users = usersRepository.findByEmail(currentUsername)
+            User users = usersRepository.findByEmail(currentUsername)
                     .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
             recruiterProfile.setUserId(users);
             recruiterProfile.setUserAccountId(users.getUserId());

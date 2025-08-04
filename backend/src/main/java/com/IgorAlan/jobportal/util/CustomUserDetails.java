@@ -1,10 +1,11 @@
 package com.IgorAlan.jobportal.util;
 
-import com.IgorAlan.jobportal.entity.Users;
-import com.IgorAlan.jobportal.entity.UsersType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.IgorAlan.jobportal.models.User;
+import com.IgorAlan.jobportal.models.UserType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,15 +13,15 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
-    private Users user;
+    private User user;
 
-    public CustomUserDetails(Users user) {
+    public CustomUserDetails(User user) {
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        UsersType usersType = user.getUserTypeId();
+        UserType usersType = user.getUserTypeId();
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(usersType.getUserTypeName()));
         return authorities;

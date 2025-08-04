@@ -1,11 +1,10 @@
 package com.IgorAlan.jobportal.controller;
 
-import com.IgorAlan.jobportal.entity.*;
+import com.IgorAlan.jobportal.models.*;
 import com.IgorAlan.jobportal.services.JobPostActivityService;
 import com.IgorAlan.jobportal.services.JobSeekerApplyService;
 import com.IgorAlan.jobportal.services.JobSeekerSaveService;
 import com.IgorAlan.jobportal.services.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -27,7 +26,6 @@ public class JobPostActivityController {
     private final JobSeekerApplyService jobSeekerApplyService;
     private final JobSeekerSaveService jobSeekerSaveService;
 
-    @Autowired
     public JobPostActivityController(UsersService usersService, JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService) {
         this.usersService = usersService;
         this.jobPostActivityService = jobPostActivityService;
@@ -37,17 +35,17 @@ public class JobPostActivityController {
 
     @GetMapping("/")
     public ResponseEntity<?> searchJobs(
-            @RequestParam(value = "job", required = false) String job,
-            @RequestParam(value = "location", required = false) String location,
-            @RequestParam(value = "partTime", required = false) String partTime,
-            @RequestParam(value = "fullTime", required = false) String fullTime,
-            @RequestParam(value = "freelance", required = false) String freelance,
-            @RequestParam(value = "remoteOnly", required = false) String remoteOnly,
-            @RequestParam(value = "officeOnly", required = false) String officeOnly,
-            @RequestParam(value = "partialRemote", required = false) String partialRemote,
-            @RequestParam(value = "today", required = false) boolean today,
-            @RequestParam(value = "days7", required = false) boolean days7,
-            @RequestParam(value = "days30", required = false) boolean days30) {
+            @RequestParam(required = false) String job,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String partTime,
+            @RequestParam(required = false) String fullTime,
+            @RequestParam(required = false) String freelance,
+            @RequestParam(required = false) String remoteOnly,
+            @RequestParam(required = false) String officeOnly,
+            @RequestParam(required = false) String partialRemote,
+            @RequestParam(required = false) boolean today,
+            @RequestParam(required = false) boolean days7,
+            @RequestParam(required = false) boolean days30) {
 
         // Lógica para os filtros de tempo
         LocalDate searchDate = null;
@@ -128,17 +126,17 @@ public class JobPostActivityController {
 
     @GetMapping("/global-search")
     public ResponseEntity<?> globalSearch(
-            @RequestParam(value = "job", required = false) String job,
-            @RequestParam(value = "location", required = false) String location,
-            @RequestParam(value = "partTime", required = false) String partTime,
-            @RequestParam(value = "fullTime", required = false) String fullTime,
-            @RequestParam(value = "freelance", required = false) String freelance,
-            @RequestParam(value = "remoteOnly", required = false) String remoteOnly,
-            @RequestParam(value = "officeOnly", required = false) String officeOnly,
-            @RequestParam(value = "partialRemote", required = false) String partialRemote,
-            @RequestParam(value = "today", required = false, defaultValue = "false") boolean today,
-            @RequestParam(value = "days7", required = false, defaultValue = "false") boolean days7,
-            @RequestParam(value = "days30", required = false, defaultValue = "false") boolean days30) {
+            @RequestParam(required = false) String job,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String partTime,
+            @RequestParam(required = false) String fullTime,
+            @RequestParam(required = false) String freelance,
+            @RequestParam(required = false) String remoteOnly,
+            @RequestParam(required = false) String officeOnly,
+            @RequestParam(required = false) String partialRemote,
+            @RequestParam(required = false, defaultValue = "false") boolean today,
+            @RequestParam(required = false, defaultValue = "false") boolean days7,
+            @RequestParam(required = false, defaultValue = "false") boolean days30) {
 
         LocalDate searchDate = null;
         boolean dateSearchFlag = true;
@@ -192,7 +190,7 @@ public class JobPostActivityController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addNew(@RequestBody JobPostActivity jobPostActivity) {
-        Users user = usersService.getCurrentUser();
+        User user = usersService.getCurrentUser();
         if (user != null) {
             jobPostActivity.setPostedById(user);
         }
@@ -203,7 +201,7 @@ public class JobPostActivityController {
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<?> editJob(@PathVariable("id") int id) {
+    public ResponseEntity<?> editJob(@PathVariable Long id) {
         JobPostActivity jobPostActivity = jobPostActivityService.getOne(id);
 
         if (jobPostActivity == null) {

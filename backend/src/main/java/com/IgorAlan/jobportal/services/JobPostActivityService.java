@@ -1,9 +1,8 @@
 package com.IgorAlan.jobportal.services;
 
 
-import com.IgorAlan.jobportal.entity.*;
+import com.IgorAlan.jobportal.models.*;
 import com.IgorAlan.jobportal.repository.JobPostActivityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,7 +15,6 @@ public class JobPostActivityService {
 
     private final JobPostActivityRepository jobPostActivityRepository;
 
-    @Autowired
     public JobPostActivityService(JobPostActivityRepository jobPostActivityRepository) {
         this.jobPostActivityRepository = jobPostActivityRepository;
     }
@@ -25,7 +23,7 @@ public class JobPostActivityService {
         return jobPostActivityRepository.save(jobPostActivity);
     }
 
-    public List<RecruiterJobsDto> getRecruiterJobs(int recruiter) {
+    public List<RecruiterJobsDto> getRecruiterJobs(Long recruiter) {
 
         List<IRecruiterJobs> recruiterJobsDtos = jobPostActivityRepository.getRecruiterJobs(recruiter);
 
@@ -40,7 +38,7 @@ public class JobPostActivityService {
 
     }
 
-    public JobPostActivity getOne(int id) {
+    public JobPostActivity getOne(Long id) {
         return jobPostActivityRepository.findById(id).orElseThrow(()->new RuntimeException("Job not found"));
     }
 
