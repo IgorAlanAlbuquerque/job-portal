@@ -3,7 +3,7 @@ package com.IgorAlan.jobportal.controller;
 
 import com.IgorAlan.jobportal.models.RecruiterProfile;
 import com.IgorAlan.jobportal.models.User;
-import com.IgorAlan.jobportal.repository.UsersRepository;
+import com.IgorAlan.jobportal.repository.UserRepository;
 import com.IgorAlan.jobportal.services.RecruiterProfileService;
 import com.IgorAlan.jobportal.util.FileUploadUtil;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +22,11 @@ import java.util.Optional;
 @RequestMapping("/recruiter-profile/")
 public class RecruiterProfileController {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
     private final RecruiterProfileService recruiterProfileService;
 
-    public RecruiterProfileController(UsersRepository usersRepository, RecruiterProfileService recruiterProfileService) {
-        this.usersRepository = usersRepository;
+    public RecruiterProfileController(UserRepository userRepository, RecruiterProfileService recruiterProfileService) {
+        this.userRepository = userRepository;
         this.recruiterProfileService = recruiterProfileService;
     }
 
@@ -35,7 +35,7 @@ public class RecruiterProfileController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             String currentUserName = auth.getName();
-            User users = usersRepository.findByEmail(currentUserName)
+            User users = userRepository.findByEmail(currentUserName)
                     .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
             Optional<RecruiterProfile> recruiterProfile = recruiterProfileService.getOne(users.getUserId());
 
@@ -55,9 +55,9 @@ public class RecruiterProfileController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            User users = usersRepository.findByEmail(currentUsername)
+            User users = userRepository.findByEmail(currentUsername)
                     .orElseThrow(() -> new UsernameNotFoundException("Could not find user"));
-            recruiterProfile.setUserId(users);
+            recruiterProfile.setUser(users);
             recruiterProfile.setUserAccountId(users.getUserId());
         }
 

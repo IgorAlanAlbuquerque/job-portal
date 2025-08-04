@@ -1,7 +1,7 @@
 package com.IgorAlan.jobportal.services;
 
 import com.IgorAlan.jobportal.models.UserType;
-import com.IgorAlan.jobportal.repository.UsersTypeRepository;
+import com.IgorAlan.jobportal.repository.UserTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 @Service
 public class UsersTypeService {
 
-    private final UsersTypeRepository usersTypeRepository;
+    private final UserTypeRepository usersTypeRepository;
 
-    public UsersTypeService(UsersTypeRepository usersTypeRepository) {
+    public UsersTypeService(UserTypeRepository usersTypeRepository) {
         this.usersTypeRepository = usersTypeRepository;
     }
 

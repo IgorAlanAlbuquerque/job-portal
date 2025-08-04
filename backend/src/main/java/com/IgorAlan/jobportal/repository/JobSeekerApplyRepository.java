@@ -10,7 +10,7 @@ import com.IgorAlan.jobportal.models.JobSeekerProfile;
 import java.util.List;
 
 @Repository
-public interface JobSeekerApplyRepository extends JpaRepository<JobSeekerApply, Integer> {
+public interface JobSeekerApplyRepository extends JpaRepository<JobSeekerApply, Long> {
 
     List<JobSeekerApply> findByUserId(JobSeekerProfile userId);
 

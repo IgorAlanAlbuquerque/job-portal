@@ -1,9 +1,9 @@
 package com.IgorAlan.jobportal.controller;
 
 import com.IgorAlan.jobportal.models.JobSeekerProfile;
-import com.IgorAlan.jobportal.models.Skills;
+import com.IgorAlan.jobportal.models.Skill;
 import com.IgorAlan.jobportal.models.User;
-import com.IgorAlan.jobportal.repository.UsersRepository;
+import com.IgorAlan.jobportal.repository.UserRepository;
 import com.IgorAlan.jobportal.services.JobSeekerProfileService;
 import com.IgorAlan.jobportal.util.FileDownloadUtil;
 import com.IgorAlan.jobportal.util.FileUploadUtil;
@@ -30,11 +30,11 @@ public class JobSeekerProfileController {
 
     private final JobSeekerProfileService jobSeekerProfileService;
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
-    public JobSeekerProfileController(JobSeekerProfileService jobSeekerProfileService, UsersRepository usersRepository) {
+    public JobSeekerProfileController(JobSeekerProfileService jobSeekerProfileService, UserRepository userRepository) {
         this.jobSeekerProfileService = jobSeekerProfileService;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/")
@@ -44,7 +44,7 @@ public class JobSeekerProfileController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        User user = usersRepository.findByEmail(authentication.getName())
+        User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
 
@@ -69,13 +69,13 @@ public class JobSeekerProfileController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        User user = usersRepository.findByEmail(authentication.getName())
+        User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-        jobSeekerProfile.setUserId(user);
+        jobSeekerProfile.setUser(user);
         jobSeekerProfile.setUserAccountId(user.getUserId());
 
-        List<Skills> skillsList = jobSeekerProfile.getSkills();
-        for (Skills skill : skillsList) {
+        List<Skill> skillsList = jobSeekerProfile.getSkills();
+        for (Skill skill : skillsList) {
             skill.setJobSeekerProfile(jobSeekerProfile);
         }
 

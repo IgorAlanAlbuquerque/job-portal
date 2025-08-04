@@ -2,7 +2,7 @@ package com.IgorAlan.jobportal.controller;
 
 import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.models.UserType;
-import com.IgorAlan.jobportal.services.UsersService;
+import com.IgorAlan.jobportal.services.UserService;
 import com.IgorAlan.jobportal.services.UsersTypeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,11 +20,11 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UsersController {
     private final UsersTypeService usersTypeService;
-    private final UsersService usersService;
+    private final UserService userService;
 
-    public UsersController(UsersTypeService usersTypeService, UsersService usersService) {
+    public UsersController(UsersTypeService usersTypeService, UserService userService) {
         this.usersTypeService = usersTypeService;
-        this.usersService = usersService;
+        this.userService = userService;
     }
 
     @GetMapping("/register")
@@ -36,12 +36,12 @@ public class UsersController {
     @PostMapping("/register/new")
     public ResponseEntity<?> userRegister(@Valid @RequestBody User user) {
 
-        Optional<User> optionalUsers = usersService.getUserByEmail(user.getEmail());
+        Optional<User> optionalUsers = userService.getUserByEmail(user.getEmail());
 
         if (optionalUsers.isPresent()) {
             return ResponseEntity.badRequest().body("Email already registered");
         }
-        usersService.addNew(user);
+        userService.addNew(user);
         return ResponseEntity.status(201).body("User registered successfully");
     }
 

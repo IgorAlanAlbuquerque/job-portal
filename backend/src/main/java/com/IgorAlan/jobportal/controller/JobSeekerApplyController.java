@@ -17,16 +17,16 @@ import java.util.*;
 public class JobSeekerApplyController {
 
     private final JobPostActivityService jobPostActivityService;
-    private final UsersService usersService;
+    private final UserService userService;
     private final JobSeekerApplyService jobSeekerApplyService;
     private final JobSeekerSaveService jobSeekerSaveService;
     private final RecruiterProfileService recruiterProfileService;
     private final JobSeekerProfileService jobSeekerProfileService;
 
 
-    public JobSeekerApplyController(JobPostActivityService jobPostActivityService, UsersService usersService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService, RecruiterProfileService recruiterProfileService, JobSeekerProfileService jobSeekerProfileService) {
+    public JobSeekerApplyController(JobPostActivityService jobPostActivityService, UserService userService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService, RecruiterProfileService recruiterProfileService, JobSeekerProfileService jobSeekerProfileService) {
         this.jobPostActivityService = jobPostActivityService;
-        this.usersService = usersService;
+        this.userService = userService;
         this.jobSeekerApplyService = jobSeekerApplyService;
         this.jobSeekerSaveService = jobSeekerSaveService;
         this.recruiterProfileService = recruiterProfileService;
@@ -57,9 +57,9 @@ public class JobSeekerApplyController {
             JobSeekerProfile jobSeekerProfile = jobSeekerProfileService.getCurrentSeekerProfile();
             if (jobSeekerProfile != null) {
                 boolean exists = jobSeekerApplyList.stream()
-                        .anyMatch(apply -> apply.getUserId().getUserAccountId() == jobSeekerProfile.getUserAccountId());
+                        .anyMatch(apply -> apply.getProfile().getUserAccountId() == jobSeekerProfile.getUserAccountId());
                 boolean saved = jobSeekerSaveList.stream()
-                        .anyMatch(save -> save.getUserId().getUserAccountId() == jobSeekerProfile.getUserAccountId());
+                        .anyMatch(save -> save.getProfile().getUserAccountId() == jobSeekerProfile.getUserAccountId());
 
                 Map<String, Boolean> response = new HashMap<>();
                 response.put("alreadyApplied", exists);
@@ -79,7 +79,7 @@ public class JobSeekerApplyController {
         }
 
         String currentUsername = authentication.getName();
-        User user = usersService.findByEmail(currentUsername);
+        User user = userService.findByEmail(currentUsername);
         if (user == null) {
             return ResponseEntity.status(404).body("User not found");
         }
@@ -89,9 +89,8 @@ public class JobSeekerApplyController {
 
         if (seekerProfile.isPresent() && jobPostActivity != null) {
             JobSeekerApply jobSeekerApply = new JobSeekerApply();
-            jobSeekerApply.setUserId(seekerProfile.get());
+            jobSeekerApply.setProfile(seekerProfile.get());
             jobSeekerApply.setJob(jobPostActivity);
-            jobSeekerApply.setApplyDate(new Date());
 
             jobSeekerApplyService.addNew(jobSeekerApply);
 

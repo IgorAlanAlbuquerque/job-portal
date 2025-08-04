@@ -9,9 +9,8 @@ import com.IgorAlan.jobportal.models.JobPostActivity;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-public interface JobPostActivityRepository extends JpaRepository<JobPostActivity, Integer> {
+public interface JobPostActivityRepository extends JpaRepository<JobPostActivity, Long> {
         
         @Query(value = " SELECT COUNT(s.user_id) as totalCandidates,j.job_post_id,j.job_title,l.id as locationId,l.city,l.state,l.country,c.id as companyId,c.name FROM job_post_activity j " +
             " inner join job_location l " +
@@ -51,6 +50,4 @@ public interface JobPostActivityRepository extends JpaRepository<JobPostActivity
                             @Param("remote") List<String> remote,
                             @Param("type") List<String> type,
                             @Param("date") LocalDate searchDate);
-
-        Optional<JobPostActivity> findById(Long id);
 }

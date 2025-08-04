@@ -3,7 +3,7 @@ package com.IgorAlan.jobportal.services;
 import com.IgorAlan.jobportal.models.JobSeekerProfile;
 import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.repository.JobSeekerProfileRepository;
-import com.IgorAlan.jobportal.repository.UsersRepository;
+import com.IgorAlan.jobportal.repository.UserRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,11 +16,11 @@ import java.util.Optional;
 public class JobSeekerProfileService {
 
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
-    public JobSeekerProfileService(JobSeekerProfileRepository jobSeekerProfileRepository, UsersRepository usersRepository) {
+    public JobSeekerProfileService(JobSeekerProfileRepository jobSeekerProfileRepository, UserRepository userRepository) {
         this.jobSeekerProfileRepository = jobSeekerProfileRepository;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     public Optional<JobSeekerProfile> getOne(Long id) {
@@ -35,7 +35,7 @@ public class JobSeekerProfileService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            User users = usersRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            User users = userRepository.findByEmail(currentUsername).orElseThrow(() -> new UsernameNotFoundException("User not found"));
             Optional<JobSeekerProfile> seekerProfile = getOne(users.getUserId());
             return seekerProfile.orElse(null);
         } else return null;

@@ -2,6 +2,7 @@ package com.IgorAlan.jobportal.services;
 
 
 import com.IgorAlan.jobportal.models.*;
+import com.IgorAlan.jobportal.models.dtos.RecruiterJobsDto;
 import com.IgorAlan.jobportal.repository.JobPostActivityRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +31,9 @@ public class JobPostActivityService {
         List<RecruiterJobsDto> recruiterJobsDtoList = new ArrayList<>();
 
         for (IRecruiterJobs rec : recruiterJobsDtos) {
-            JobLocation loc = new JobLocation(rec.getState(), rec.getLocationId(), rec.getCity(), rec.getCountry());
-            JobCompany comp = new JobCompany("", rec.getName(), rec.getCompanyId());
-            recruiterJobsDtoList.add(new RecruiterJobsDto(comp, loc, rec.getJob_title(), rec.getJob_post_id(), rec.getTotalCandidates()));
+            JobLocation loc = new JobLocation(rec.getLocationId(), rec.getCity(), rec.getState(), rec.getCountry());
+            JobCompany comp = new JobCompany(rec.getCompanyId(), rec.getName(), "");
+            recruiterJobsDtoList.add(new RecruiterJobsDto(rec.getTotalCandidates(), rec.getJob_post_id(), rec.getJob_title(), loc, comp));
         }
         return recruiterJobsDtoList;
 

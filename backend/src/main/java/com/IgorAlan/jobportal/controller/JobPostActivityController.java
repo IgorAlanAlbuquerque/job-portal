@@ -1,10 +1,11 @@
 package com.IgorAlan.jobportal.controller;
 
 import com.IgorAlan.jobportal.models.*;
+import com.IgorAlan.jobportal.models.dtos.RecruiterJobsDto;
 import com.IgorAlan.jobportal.services.JobPostActivityService;
 import com.IgorAlan.jobportal.services.JobSeekerApplyService;
 import com.IgorAlan.jobportal.services.JobSeekerSaveService;
-import com.IgorAlan.jobportal.services.UsersService;
+import com.IgorAlan.jobportal.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -21,13 +22,13 @@ import java.util.*;
 @RequestMapping("/api/job-post-activity")
 public class JobPostActivityController {
 
-    private final UsersService usersService;
+    private final UserService userService;
     private final JobPostActivityService jobPostActivityService;
     private final JobSeekerApplyService jobSeekerApplyService;
     private final JobSeekerSaveService jobSeekerSaveService;
 
-    public JobPostActivityController(UsersService usersService, JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService) {
-        this.usersService = usersService;
+    public JobPostActivityController(UserService userService, JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService) {
+        this.userService = userService;
         this.jobPostActivityService = jobPostActivityService;
         this.jobSeekerApplyService = jobSeekerApplyService;
         this.jobSeekerSaveService = jobSeekerSaveService;
@@ -84,7 +85,7 @@ public class JobPostActivityController {
         }
 
         // Usuário autenticado, ajusta as ofertas com o status de candidatura ou salvamento
-        Object currentUserProfile = usersService.getCurrentUserProfile();
+        Object currentUserProfile = userService.getCurrentUserProfile();
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("Recruiter"))) {
             // Se for recrutador, retorne as vagas específicas para ele
             List<RecruiterJobsDto> recruiterJobs = jobPostActivityService.getRecruiterJobs(((RecruiterProfile) currentUserProfile).getUserAccountId());
@@ -99,7 +100,7 @@ public class JobPostActivityController {
                 boolean saved = false;
                 for (JobSeekerApply jobSeekerApply : jobSeekerApplyList) {
                     if (Objects.equals(jobActivity.getJobPostId(), jobSeekerApply.getJob().getJobPostId())) {
-                        jobActivity.setIsActive(true);
+                        jobActivity.setActive(true);
                         exist = true;
                         break;
                     }
@@ -107,17 +108,17 @@ public class JobPostActivityController {
 
                 for (JobSeekerSave jobSeekerSave : jobSeekerSaveList) {
                     if (Objects.equals(jobActivity.getJobPostId(), jobSeekerSave.getJob().getJobPostId())) {
-                        jobActivity.setIsSaved(true);
+                        jobActivity.setSaved(true);
                         saved = true;
                         break;
                     }
                 }
 
                 if (!exist) {
-                    jobActivity.setIsActive(false);
+                    jobActivity.setActive(false);
                 }
                 if (!saved) {
-                    jobActivity.setIsSaved(false);
+                    jobActivity.setSaved(false);
                 }
             }
             return ResponseEntity.ok(jobPost);
@@ -190,11 +191,10 @@ public class JobPostActivityController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addNew(@RequestBody JobPostActivity jobPostActivity) {
-        User user = usersService.getCurrentUser();
+        User user = userService.getCurrentUser();
         if (user != null) {
-            jobPostActivity.setPostedById(user);
+            jobPostActivity.setPostedBy(user);
         }
-        jobPostActivity.setPostedDate(new Date());
         JobPostActivity createdJobPost = jobPostActivityService.addNew(jobPostActivity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdJobPost);

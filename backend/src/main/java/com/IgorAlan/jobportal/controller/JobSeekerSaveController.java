@@ -7,7 +7,7 @@ import com.IgorAlan.jobportal.models.User;
 import com.IgorAlan.jobportal.services.JobPostActivityService;
 import com.IgorAlan.jobportal.services.JobSeekerProfileService;
 import com.IgorAlan.jobportal.services.JobSeekerSaveService;
-import com.IgorAlan.jobportal.services.UsersService;
+import com.IgorAlan.jobportal.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,13 +20,13 @@ import java.util.*;
 @RequestMapping("/api/job-seeker")
 public class JobSeekerSaveController {
 
-    private final UsersService usersService;
+    private final UserService userService;
     private final JobSeekerProfileService jobSeekerProfileService;
     private final JobPostActivityService jobPostActivityService;
     private final JobSeekerSaveService jobSeekerSaveService;
 
-    public JobSeekerSaveController(UsersService usersService, JobSeekerProfileService jobSeekerProfileService, JobPostActivityService jobPostActivityService, JobSeekerSaveService jobSeekerSaveService) {
-        this.usersService = usersService;
+    public JobSeekerSaveController(UserService userService, JobSeekerProfileService jobSeekerProfileService, JobPostActivityService jobPostActivityService, JobSeekerSaveService jobSeekerSaveService) {
+        this.userService = userService;
         this.jobSeekerProfileService = jobSeekerProfileService;
         this.jobPostActivityService = jobPostActivityService;
         this.jobSeekerSaveService = jobSeekerSaveService;
@@ -38,12 +38,12 @@ public class JobSeekerSaveController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
-            User user = usersService.findByEmail(currentUsername);
+            User user = userService.findByEmail(currentUsername);
             Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(user.getUserId());
             JobPostActivity jobPostActivity = jobPostActivityService.getOne(id);
             if (seekerProfile.isPresent() && jobPostActivity != null) {
                 jobSeekerSave.setJob(jobPostActivity);
-                jobSeekerSave.setUserId(seekerProfile.get());
+                jobSeekerSave.setProfile(seekerProfile.get());
             } else {
                 return ResponseEntity.status(404).body("User or Job Post not found");
             }
@@ -56,7 +56,7 @@ public class JobSeekerSaveController {
     @GetMapping("saved-jobs/")
     public ResponseEntity<?> savedJobs() {
 
-        Object currentUserProfile = usersService.getCurrentUserProfile();
+        Object currentUserProfile = userService.getCurrentUserProfile();
 
         if (currentUserProfile == null) {
             return ResponseEntity.status(404).body("User profile not found");

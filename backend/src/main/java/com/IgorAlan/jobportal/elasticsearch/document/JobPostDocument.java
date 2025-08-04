@@ -1,5 +1,7 @@
 package com.IgorAlan.jobportal.elasticsearch.document;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -7,7 +9,9 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDateTime;
 
-@Document(indexName = "job_posts_idx") // Nome do índice onde os documentos serão salvos
+@Getter
+@Setter
+@Document(indexName = "job_posts_idx") // Nome do índice no Elasticsearch
 public class JobPostDocument {
 
     @Id
