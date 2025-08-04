@@ -1,11 +1,16 @@
-# Usa a imagem oficial do MySQL
-FROM mysql:latest
+FROM maven:3.9-eclipse-temurin-17 AS build
 
-# Define a variável de ambiente para a senha do root
-ENV MYSQL_ROOT_PASSWORD=senha123
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Copia o script SQL para o diretório de inicialização do MySQL
-COPY init.sql /docker-entrypoint-initdb.d/
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Expõe a porta 3306
-EXPOSE 3306
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

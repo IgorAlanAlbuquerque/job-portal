@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+      - name: backend-api-container
+        image: my-registry/jobportal-backend
+        ports:
+        - containerPort: 8080
+        env:
+        # --- Conexão com o Banco de Dados ---
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres-db-service:5432/jobportal"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "jobportal_user"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "jobportal_password"
+        # --- Conexão com o Redis ---
+        - name: SPRING_DATA_REDIS_HOST
+          value: "redis-cache-service"
+        - name: SPRING_DATA_REDIS_PORT
+          value: "6379"
+        # --- Conexão com o RabbitMQ ---
+        - name: SPRING_RABBITMQ_HOST
+          value: "rabbitmq-broker-service"
+        # --- Conexão com o Elasticsearch ---
+        - name: SPRING_ELASTICSEARCH_URIS
+          value: "http://elasticsearch-search-service:9200"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-service
+spec:
+  selector:
+    app: backend-api
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

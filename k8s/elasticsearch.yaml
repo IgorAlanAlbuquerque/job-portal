@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch-search
+  template:
+    metadata:
+      labels:
+        app: elasticsearch-search
+    spec:
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:8.14.0
+        ports:
+        - containerPort: 9200
+        env:
+        - name: discovery.type
+          value: "single-node"
+        - name: xpack.security.enabled
+          value: "false" # ATENÇÃO: Apenas para desenvolvimento local
+        - name: ES_JAVA_OPTS # Limita o uso de memória, importante para dev local
+          value: "-Xms512m -Xmx512m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-search-service
+spec:
+  selector:
+    app: elasticsearch-search
+  ports:
+  - protocol: TCP
+    port: 9200
+    targetPort: 9200

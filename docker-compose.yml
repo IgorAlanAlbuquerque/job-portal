@@ -1,18 +1,59 @@
 version: '3.8'
 
 services:
-  mysql:
-    build: ..
-    container_name: mysql-container
+  # 1. Banco de Dados Principal (PostgreSQL)
+  db:
+    image: postgres:16-alpine
+    container_name: jobportal-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: jobportal
-      MYSQL_USER: jobportal
-      MYSQL_PASSWORD: jobportal
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - jobportal-network
+
+  # 2. Cache em Memória (Redis)
+  cache:
+    image: redis:7-alpine
+    container_name: jobportal-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - jobportal-network
+
+  # 3. Motor de Busca (Elasticsearch)
+  search:
+    image: elasticsearch:8.14.0
+    container_name: jobportal-search
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - jobportal-network
+
+  # 4. Mensageria (RabbitMQ)
+  message-broker:
+    image: rabbitmq:3.13-management
+    container_name: jobportal-broker
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - jobportal-network
 
 volumes:
-  mysql_data:
+  db_data:
+
+networks:
+  jobportal-network:
+    driver: bridge
