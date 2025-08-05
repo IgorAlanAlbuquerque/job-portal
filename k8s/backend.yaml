@@ -23,8 +23,18 @@ spec:
           value: "jdbc:postgresql://postgres-db-service:5432/jobportal"
         - name: SPRING_DATASOURCE_USERNAME
           value: "jobportal_user"
+        - name: APPLICATION_SECURITY_JWT_EXPIRATION
+          value: "86400000"
         - name: SPRING_DATASOURCE_PASSWORD
-          value: "jobportal_password"
+          valueFrom:
+            secretKeyRef:
+              name: jobportal-secrets
+              key: POSTGRES_PASSWORD 
+        - name: APPLICATION_SECURITY_JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: jobportal-secrets
+              key: JWT_SECRET_KEY
         # --- Conexão com o Redis ---
         - name: SPRING_DATA_REDIS_HOST
           value: "redis-cache-service"

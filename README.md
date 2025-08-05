@@ -6,7 +6,7 @@ O projeto utiliza as melhores práticas do ecossistema Java e Spring, com uma in
 
 ## Tecnologias Utilizadas
 
-A arquitetura do projeto foi desenhada para ser resiliente e performática, utilizando a ferramenta certa para cada trabalho (persistência poliglota).
+A arquitetura do projeto foi desenhada para ser resiliente e performática, utilizando a ferramenta certa para cada trabalho.
 
 ### Backend
 * **Java 21**
@@ -33,7 +33,7 @@ A arquitetura do projeto foi desenhada para ser resiliente e performática, util
 * **Tilt**: Ferramenta para orquestrar e gerenciar o ambiente de desenvolvimento Kubernetes localmente, com live-reload.
 
 ### Frontend
-A fazer
+{A fazer}
 
 ## Arquitetura
 
@@ -71,39 +71,38 @@ tilt up
 
 ## Rodando manualmente
 
-Esta é uma alternativa para desenvolvedores que preferem não usar o Tilt e Kubernetes localmente. Neste modo, os serviços de dados (PostgreSQL, Redis, etc.) irão rodar em containers Docker, e a aplicação backend Spring Boot irá rodar diretamente na sua máquina (host).
+Esta é uma alternativa para desenvolvedores que preferem não usar o Tilt e Kubernetes localmente. Neste modo, os serviços de dados (PostgreSQL, Redis, etc.) irão rodar em containers Docker, e a aplicação backend Spring Boot irá rodar diretamente na sua máquina.
 
 ### Passo 1: Iniciar os Serviços de Dados
 
-Na **raíz do projeto**, execute o seguinte comando para iniciar todos os serviços de dados em background:
+Na **raíz do projeto**, copie as variáveis de ambiente de exemplo e então execute o comando para iniciar todos os serviços de dados em background:
 
 ```bash
+cp env.example .env
 docker-compose up -d
 ```
 
-### Passo 2: Compilar e Executar o Backend
+### Passo 2: Executar o Backend
 
-Agora, volte para a pasta do backend e execute a aplicação usando o perfil `local` que acabamos de criar.
+Agora, vá para a pasta do backend e execute a aplicação usando o perfil `local`.
 
-1.  Navegue de volta para a pasta do backend:
+1.  Navegue para a pasta do backend:
     ```bash
     cd backend
-    cp .env.example .env
     ```
-2.  Copie as variáveis de ambiente de exemplo:
-    ```bash
-    cp .env.example .env
-    ```
-3.  Execute o projeto com o Maven:
+2.  Execute o projeto com o Maven:
     ```bash
     mvn spring-boot:run -Dspring-boot.run.profiles=local
     ```
+
+### Passo 3: Executar o Frontend
+{A fazer}
 
 ## Detalhes do Backend
 
 ### Autenticação (JWT)
 
-A autenticação é **stateless** (sem estado) e baseada em **JSON Web Tokens (JWT)**.
+A autenticação é **stateless** e baseada em **JSON Web Tokens (JWT)**.
 1.  O cliente envia as credenciais (e-mail e senha) para o endpoint `POST /api/auth/login`.
 2.  O servidor valida as credenciais e, se corretas, retorna um token JWT.
 3.  O cliente deve armazenar este token e enviá-lo no cabeçalho `Authorization` em todas as requisições subsequentes a endpoints protegidos.
@@ -113,7 +112,7 @@ A autenticação é **stateless** (sem estado) e baseada em **JSON Web Tokens (J
 
 ### Busca (Elasticsearch)
 
-Para garantir uma experiência de busca rápida e relevante, todas as buscas de vagas (`GET /api/jobs/search`) são delegadas ao **Elasticsearch**. Quando uma vaga é criada ou atualizada, uma mensagem é enviada via RabbitMQ para que um serviço assíncrono indexe os dados no Elasticsearch, mantendo os dois sistemas sincronizados.
+Para garantir uma experiência de busca rápida, todas as buscas de vagas (`GET /api/jobs/search`) são delegadas ao **Elasticsearch**. Quando uma vaga é criada ou atualizada, uma mensagem é enviada via RabbitMQ para que um serviço assíncrono indexe os dados no Elasticsearch, mantendo os dois sistemas sincronizados.
 
 ### Mensageria (RabbitMQ)
 
@@ -158,4 +157,4 @@ Toda a infraestrutura da aplicação é definida como código, garantindo um amb
 * **Tilt (`Tiltfile`):** O `Tiltfile` na raíz do projeto é o script que orquestra a construção das imagens e a aplicação dos manifestos Kubernetes, unificando todo o ambiente de desenvolvimento.
 
 ## Detalhes do Frontend
-A fazer
+{A fazer}
