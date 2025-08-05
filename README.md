@@ -32,6 +32,9 @@ A arquitetura do projeto foi desenhada para ser resiliente e performática, util
 * **Kubernetes**: Orquestrador de containers que define nossa infraestrutura.
 * **Tilt**: Ferramenta para orquestrar e gerenciar o ambiente de desenvolvimento Kubernetes localmente, com live-reload.
 
+### Frontend
+A fazer
+
 ## Arquitetura
 
 A API segue os princípios de **Clean Architecture** e **SOLID**, com uma clara separação de responsabilidades:
@@ -153,3 +156,6 @@ Toda a infraestrutura da aplicação é definida como código, garantindo um amb
 
 * **Kubernetes (`k8s/`):** A pasta `k8s/` contém os arquivos de manifesto (`.yaml`) que descrevem cada serviço da nossa aplicação (Deployments, Services, etc.).
 * **Tilt (`Tiltfile`):** O `Tiltfile` na raíz do projeto é o script que orquestra a construção das imagens e a aplicação dos manifestos Kubernetes, unificando todo o ambiente de desenvolvimento.
+
+## Detalhes do Frontend
+A fazer
