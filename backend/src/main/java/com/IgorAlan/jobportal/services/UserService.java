@@ -9,6 +9,7 @@ import com.IgorAlan.jobportal.models.dtos.UserDto;
 import com.IgorAlan.jobportal.repository.UserRepository;
 import com.IgorAlan.jobportal.repository.UserTypeRepository;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +26,11 @@ public class UserService {
     private final UserMapper userMapper;
     private final ProfileService profileService;
 
-    public UserService(UserRepository userRepository, UserTypeRepository userTypeRepository, PasswordEncoder passwordEncoder, UserMapper userMapper, ProfileService profileService) {
+    public UserService(UserRepository userRepository,
+            UserTypeRepository userTypeRepository,
+            PasswordEncoder passwordEncoder,
+            UserMapper userMapper,
+            @Lazy ProfileService profileService) {
         this.userRepository = userRepository;
         this.userTypeRepository = userTypeRepository;
         this.passwordEncoder = passwordEncoder;

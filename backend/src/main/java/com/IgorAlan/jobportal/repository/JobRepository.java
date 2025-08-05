@@ -11,13 +11,13 @@ import java.util.List;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
 
-        @Query("SELECT new com.IgorAlan.jobportal.models.dtos.RecruiterJobsDto(" +
+    @Query("SELECT new com.IgorAlan.jobportal.models.dtos.RecruiterJobsDto(" +
             "  COUNT(s.id), " +
             "  j.jobPostId, " +
             "  j.jobTitle, " +
             "  j.jobLocation, " +
             "  j.jobCompany) " +
-            "FROM JobPostActivity j LEFT JOIN JobSeekerApply s ON s.job = j " +
+            "FROM Job j LEFT JOIN JobSeekerApply s ON s.job = j " +
             "WHERE j.postedBy.userId = :recruiterId " +
             "GROUP BY j.jobPostId, j.jobTitle, j.jobLocation, j.jobCompany")
     List<RecruiterJobsDto> getRecruiterJobs(@Param("recruiterId") Long recruiterId);

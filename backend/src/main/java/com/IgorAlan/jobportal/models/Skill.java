@@ -1,6 +1,5 @@
 package com.IgorAlan.jobportal.models;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "skill")
+@Table(name = "skills")
 public class Skill {
 
     @Id
@@ -22,12 +21,10 @@ public class Skill {
     private Long id;
 
     private String name;
-
     private String experienceLevel;
-
     private String yearsOfExperience;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_seeker_profile")
+    @JoinColumn(name = "job_seeker_profile_id")
     private JobSeekerProfile jobSeekerProfile;
 }

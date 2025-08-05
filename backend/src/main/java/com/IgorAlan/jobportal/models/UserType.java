@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Table(name = "user_type")
+@Table(name = "users_type")
 public class UserType {
 
     @Id
