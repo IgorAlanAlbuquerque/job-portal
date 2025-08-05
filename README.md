@@ -118,7 +118,27 @@ O RabbitMQ é usado para desacoplar tarefas demoradas da requisição principal,
 
 ### Testes automatizados
 
+* **Testes Unitários**: Focados em testar as classes de serviço e a lógica de negócio de forma isolada, utilizando mocks para simular as dependências.
+* **Testes de Integração**: Testam a integração entre as camadas da aplicação, desde o controller até o banco de dados, garantindo que os componentes funcionem corretamente em conjunto. Para isso, utilizamos **Testcontainers** para subir instâncias reais do PostgreSQL e outros serviços em Docker.
+
 ![Testes](readMeResources/testes.png)
+
+#### Tecnologias de Teste
+
+* **JUnit 5**: Framework principal para a execução dos testes.
+* **Mockito**: Para a criação de mocks em testes unitários.
+* **AssertJ**: Para asserções fluentes e legíveis.
+* **Spring Test & MockMvc**: Para testes de integração da camada web.
+* **Testcontainers**: Para testes de integração com instâncias Docker reais dos nossos serviços de dados.
+
+#### Como Rodar os Testes
+
+Para executar toda a suíte de testes automatizados, navegue até a pasta `backend` e utilize o comando padrão do Maven:
+
+```bash
+# Dentro da pasta /backend
+mvn test
+```
 
 ### Documentação da API (Swagger)
 
