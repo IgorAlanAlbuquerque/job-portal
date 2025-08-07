@@ -16,8 +16,8 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthService(AuthenticationManager authenticationManager,
-                    UserDetailsService userDetailsService,
-                    JwtService jwtService) {
+            UserDetailsService userDetailsService,
+            JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
@@ -27,9 +27,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
-                        request.password()
-                )
-        );
+                        request.password()));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());
 

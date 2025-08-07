@@ -25,10 +25,10 @@ public class JobSeekerService {
     private final JobMapper jobMapper;
 
     public JobSeekerService(JobSeekerApplyRepository applyRepository,
-                                JobSeekerSaveRepository saveRepository,
-                                JobRepository jobRepository,
-                                ProfileService profileService,
-                                JobMapper jobMapper) {
+            JobSeekerSaveRepository saveRepository,
+            JobRepository jobRepository,
+            ProfileService profileService,
+            JobMapper jobMapper) {
         this.applyRepository = applyRepository;
         this.saveRepository = saveRepository;
         this.jobRepository = jobRepository;
@@ -94,4 +94,3 @@ public class JobSeekerService {
                 .collect(Collectors.toList());
     }
 }
-
