@@ -1,4 +1,4 @@
-package com.IgorAlan.jobportal.elasticsearch.service;
+package com.IgorAlan.jobportal.elasticsearch.services;
 
 import com.IgorAlan.jobportal.elasticsearch.document.JobDocument;
 import com.IgorAlan.jobportal.elasticsearch.repository.JobSearchRepository;

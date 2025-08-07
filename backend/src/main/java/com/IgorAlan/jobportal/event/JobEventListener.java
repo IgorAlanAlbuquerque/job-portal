@@ -1,6 +1,6 @@
 package com.IgorAlan.jobportal.event;
 
-import com.IgorAlan.jobportal.elasticsearch.service.JobIndexingService;
+import com.IgorAlan.jobportal.elasticsearch.services.JobIndexingService;
 import com.IgorAlan.jobportal.repository.JobRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
