@@ -19,20 +19,19 @@ public class GlobalExceptionHandler {
                 "status", HttpStatus.NOT_FOUND.value(),
                 "error", "Not Found",
                 "message", ex.getMessage(),
-                "path", request.getDescription(false).replace("uri=", "")
-        );
+                "path", request.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<Object> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, WebRequest request) {
+    public ResponseEntity<Object> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex,
+            WebRequest request) {
         Map<String, Object> body = Map.of(
                 "timestamp", LocalDateTime.now(),
                 "status", HttpStatus.CONFLICT.value(),
                 "error", "Conflict",
                 "message", ex.getMessage(),
-                "path", request.getDescription(false).replace("uri=", "")
-        );
+                "path", request.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
@@ -43,8 +42,7 @@ public class GlobalExceptionHandler {
                 "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "error", "Internal Server Error",
                 "message", "Ocorreu um erro inesperado. Tente novamente mais tarde.",
-                "path", request.getDescription(false).replace("uri=", "")
-        );
+                "path", request.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,6 +1,5 @@
 package com.IgorAlan.jobportal.models;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @Table(name = "job_seeker_apply", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"profile_id", "job_id"})
+        @UniqueConstraint(columnNames = { "profile_id", "job_id" })
 })
 public class JobSeekerApply {
 

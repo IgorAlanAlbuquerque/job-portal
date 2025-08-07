@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "job_seeker_save", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"profile_id", "job_id"})
+        @UniqueConstraint(columnNames = { "profile_id", "job_id" })
 })
 public class JobSeekerSave {
 

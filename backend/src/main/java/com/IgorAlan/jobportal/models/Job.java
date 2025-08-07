@@ -1,6 +1,5 @@
 package com.IgorAlan.jobportal.models;
 
-
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

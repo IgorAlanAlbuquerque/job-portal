@@ -15,6 +15,5 @@ public interface JobSearchRepository extends ElasticsearchRepository<JobDocument
     Page<JobDocument> findByJobTitleContainsOrDescriptionContains(String title, String description, Pageable pageable);
 
     Page<JobDocument> findByJobTitleContainsOrDescriptionContainsAndCityAndJobTypeIn(
-            String keyword, String city, List<String> jobTypes, Pageable pageable
-    );
+            String keyword, String city, List<String> jobTypes, Pageable pageable);
 }

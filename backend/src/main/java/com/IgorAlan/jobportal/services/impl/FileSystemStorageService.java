@@ -53,7 +53,7 @@ public class FileSystemStorageService implements StorageService {
         User currentUser = userService.getCurrentAuthenticatedUser();
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String uniqueFilename = UUID.randomUUID().toString() + "." + extension;
-        
+
         Path userDirPath = Paths.get(uploadDir, "photos", "candidate", String.valueOf(currentUser.getUserId()));
         return saveFile(file, userDirPath, uniqueFilename);
     }
@@ -66,7 +66,8 @@ public class FileSystemStorageService implements StorageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil de candidato não encontrado"));
 
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        String uniqueFilename = "resume_" + currentUser.getUserId() + "_" + UUID.randomUUID().toString() + "." + extension;
+        String uniqueFilename = "resume_" + currentUser.getUserId() + "_" + UUID.randomUUID().toString() + "."
+                + extension;
 
         Path userDirPath = Paths.get(uploadDir, "resumes", String.valueOf(currentUser.getUserId()));
         saveFile(file, userDirPath, uniqueFilename);
@@ -96,7 +97,8 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public Resource loadResume(Long userId) {
         JobSeekerProfile profile = jobSeekerProfileRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil de candidato não encontrado para o ID: " + userId));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Perfil de candidato não encontrado para o ID: " + userId));
 
         String filename = profile.getResume();
         if (filename == null || filename.isBlank()) {

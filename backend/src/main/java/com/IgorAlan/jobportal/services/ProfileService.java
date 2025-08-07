@@ -23,9 +23,9 @@ public class ProfileService {
     private final UserMapper userMapper;
 
     public ProfileService(JobSeekerProfileRepository jobSeekerProfileRepository,
-                        RecruiterProfileRepository recruiterProfileRepository,
-                        UserService userService,
-                        UserMapper userMapper) {
+            RecruiterProfileRepository recruiterProfileRepository,
+            UserService userService,
+            UserMapper userMapper) {
         this.jobSeekerProfileRepository = jobSeekerProfileRepository;
         this.recruiterProfileRepository = recruiterProfileRepository;
         this.userService = userService;
@@ -79,12 +79,14 @@ public class ProfileService {
 
     private RecruiterProfile findRecruiterProfileByUserId(Long userId) {
         return recruiterProfileRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil de recrutador não encontrado para o usuário com ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Perfil de recrutador não encontrado para o usuário com ID: " + userId));
     }
 
     private JobSeekerProfile findJobSeekerProfileByUserId(Long userId) {
         return jobSeekerProfileRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil de candidato não encontrado para o usuário com ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Perfil de candidato não encontrado para o usuário com ID: " + userId));
     }
 
     public JobSeekerProfile getCurrentJobSeekerProfile() {
@@ -96,6 +98,7 @@ public class ProfileService {
         }
 
         return jobSeekerProfileRepository.findById(currentUser.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil de candidato não encontrado para o usuário: " + currentUser.getEmail()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Perfil de candidato não encontrado para o usuário: " + currentUser.getEmail()));
     }
 }

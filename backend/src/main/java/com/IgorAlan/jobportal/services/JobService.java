@@ -1,6 +1,5 @@
 package com.IgorAlan.jobportal.services;
 
-
 import com.IgorAlan.jobportal.elasticsearch.document.JobDocument;
 import com.IgorAlan.jobportal.elasticsearch.repository.JobSearchRepository;
 import com.IgorAlan.jobportal.exception.AccessDeniedException;
@@ -42,14 +41,14 @@ public class JobService {
     private final JobSeekerApplyRepository jobSeekerApplyRepository;
 
     public JobService(JobRepository jobRepository,
-                                UserService userService,
-                                JobSearchRepository jobSearchRepository,
-                                JobMapper jobMapper,
-                                RabbitTemplate rabbitTemplate,
-                                JobSeekerService jobSeekerService,
-                                LocationRepository locationRepository,
-                                CompanyRepository companyRepository,
-                                JobSeekerApplyRepository jobSeekerApplyRepository) {
+            UserService userService,
+            JobSearchRepository jobSearchRepository,
+            JobMapper jobMapper,
+            RabbitTemplate rabbitTemplate,
+            JobSeekerService jobSeekerService,
+            LocationRepository locationRepository,
+            CompanyRepository companyRepository,
+            JobSeekerApplyRepository jobSeekerApplyRepository) {
         this.jobRepository = jobRepository;
         this.userService = userService;
         this.jobSearchRepository = jobSearchRepository;
@@ -66,9 +65,11 @@ public class JobService {
         User currentUser = userService.getCurrentAuthenticatedUser();
 
         JobLocation location = locationRepository.findById(createJobDto.locationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Localização não encontrada com ID: " + createJobDto.locationId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Localização não encontrada com ID: " + createJobDto.locationId()));
         JobCompany company = companyRepository.findById(createJobDto.companyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com ID: " + createJobDto.companyId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Empresa não encontrada com ID: " + createJobDto.companyId()));
 
         Job newJob = jobMapper.toEntity(createJobDto);
 
@@ -115,8 +116,6 @@ public class JobService {
     public JobDetailDto updateJob(Long id, UpdateJobDto updateDto) {
         User currentUser = userService.getCurrentAuthenticatedUser();
         Job job = findJobByIdAndValidateOwnership(id, currentUser);
-
-        
 
         jobMapper.updateEntityFromDto(updateDto, job);
         Job updatedJob = jobRepository.save(job);

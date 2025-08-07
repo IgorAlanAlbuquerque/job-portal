@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"user", "skills"})
+@ToString(exclude = { "user", "skills" })
 @Entity
 @Table(name = "job_seeker_profile")
 public class JobSeekerProfile {

@@ -23,7 +23,6 @@ import com.IgorAlan.jobportal.services.StorageService;
 
 import jakarta.validation.Valid;
 
-
 @RestController
 @RequestMapping("/api/profiles")
 public class ProfileController {

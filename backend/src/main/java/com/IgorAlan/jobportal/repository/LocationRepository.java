@@ -7,5 +7,5 @@ import com.IgorAlan.jobportal.models.JobLocation;
 
 @Repository
 public interface LocationRepository extends JpaRepository<JobLocation, Long> {
-    
+
 }
