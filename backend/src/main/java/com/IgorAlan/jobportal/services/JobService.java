@@ -11,10 +11,8 @@ import com.IgorAlan.jobportal.models.dtos.JobDetailDto;
 import com.IgorAlan.jobportal.models.dtos.JobSummaryDto;
 import com.IgorAlan.jobportal.models.dtos.RecruiterJobsDto;
 import com.IgorAlan.jobportal.models.dtos.UpdateJobDto;
-import com.IgorAlan.jobportal.repository.CompanyRepository;
 import com.IgorAlan.jobportal.repository.JobRepository;
 import com.IgorAlan.jobportal.repository.JobSeekerApplyRepository;
-import com.IgorAlan.jobportal.repository.LocationRepository;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -36,8 +34,8 @@ public class JobService {
     private final JobMapper jobMapper;
     private final RabbitTemplate rabbitTemplate;
     private final JobSeekerService jobSeekerService;
-    private final LocationRepository locationRepository;
-    private final CompanyRepository companyRepository;
+    private final LocationService locationService;
+    private final CompanyService companyService;
     private final JobSeekerApplyRepository jobSeekerApplyRepository;
 
     public JobService(JobRepository jobRepository,
@@ -46,8 +44,8 @@ public class JobService {
             JobMapper jobMapper,
             RabbitTemplate rabbitTemplate,
             JobSeekerService jobSeekerService,
-            LocationRepository locationRepository,
-            CompanyRepository companyRepository,
+            LocationService locationService,
+            CompanyService companyService,
             JobSeekerApplyRepository jobSeekerApplyRepository) {
         this.jobRepository = jobRepository;
         this.userService = userService;
@@ -55,8 +53,8 @@ public class JobService {
         this.jobMapper = jobMapper;
         this.rabbitTemplate = rabbitTemplate;
         this.jobSeekerService = jobSeekerService;
-        this.locationRepository = locationRepository;
-        this.companyRepository = companyRepository;
+        this.locationService = locationService;
+        this.companyService = companyService;
         this.jobSeekerApplyRepository = jobSeekerApplyRepository;
     }
 
@@ -64,12 +62,8 @@ public class JobService {
     public JobDetailDto createNewJob(CreateJobDto createJobDto) {
         User currentUser = userService.getCurrentAuthenticatedUser();
 
-        JobLocation location = locationRepository.findById(createJobDto.locationId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Localização não encontrada com ID: " + createJobDto.locationId()));
-        JobCompany company = companyRepository.findById(createJobDto.companyId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Empresa não encontrada com ID: " + createJobDto.companyId()));
+        JobLocation location = locationService.findById(createJobDto.locationId());
+        JobCompany company = companyService.findById(createJobDto.companyId());
 
         Job newJob = jobMapper.toEntity(createJobDto);
 
