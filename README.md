@@ -9,6 +9,7 @@ O projeto utiliza as melhores práticas do ecossistema Java e Spring, com uma in
 A arquitetura do projeto foi desenhada para ser resiliente e performática, utilizando a ferramenta certa para cada trabalho.
 
 ### Backend
+
 * **Java 21**
 * **Spring Boot 3.3+**: Framework principal para a construção da API REST.
 * **Spring Security**: Para autenticação e autorização, utilizando **JWT (JSON Web Tokens)**.
@@ -22,17 +23,20 @@ A arquitetura do projeto foi desenhada para ser resiliente e performática, util
 * **Maven**: Para gerenciamento de dependências e build do projeto.
 
 ### Infraestrutura e Dados
+
 * **PostgreSQL**: Banco de dados relacional principal.
 * **Elasticsearch**: Motor de busca para a pesquisa de vagas.
 * **Redis**: Banco de dados em memória para cache.
 * **RabbitMQ**: Broker de mensageria para processamento de tarefas assíncronas.
 
 ### Ambiente de Desenvolvimento e Orquestração
+
 * **Docker**: Para containerizar todos os serviços da aplicação.
 * **Kubernetes**: Orquestrador de containers que define nossa infraestrutura.
 * **Tilt**: Ferramenta para orquestrar e gerenciar o ambiente de desenvolvimento Kubernetes localmente, com live-reload.
 
 ### Frontend
+
 {A fazer}
 
 ## Arquitetura
@@ -55,9 +59,10 @@ A estrutura relacional principal, gerida pelo PostgreSQL, é a seguinte:
 ### Pré-requisitos
 
 Para rodar a aplicação localmente, você precisa ter as seguintes ferramentas instaladas:
-1.  **Docker Desktop**: [Link de Instalação](https://www.docker.com/products/docker-desktop/)
-2.  **Kubernetes**: Habilitado dentro do Docker Desktop (`Settings -> Kubernetes -> Enable Kubernetes`).
-3.  **Tilt**: [Link de Instalação](https://docs.tilt.dev/install.html)
+
+1. **Docker Desktop**: [Link de Instalação](https://www.docker.com/products/docker-desktop/)
+2. **Kubernetes**: Habilitado dentro do Docker Desktop (`Settings -> Kubernetes -> Enable Kubernetes`).
+3. **Tilt**: [Link de Instalação](https://docs.tilt.dev/install.html)
 
 ### Rodando via Tilt (Método Recomendado)
 
@@ -86,16 +91,20 @@ docker-compose up -d
 
 Agora, vá para a pasta do backend e execute a aplicação usando o perfil `local`.
 
-1.  Navegue para a pasta do backend:
+1. Navegue para a pasta do backend:
+
     ```bash
     cd backend
     ```
-2.  Execute o projeto com o Maven:
+
+2. Execute o projeto com o Maven:
+
     ```bash
     mvn spring-boot:run -Dspring-boot.run.profiles=local
     ```
 
 ### Passo 3: Executar o Frontend
+
 {A fazer}
 
 ## Detalhes do Backend
@@ -103,9 +112,11 @@ Agora, vá para a pasta do backend e execute a aplicação usando o perfil `loca
 ### Autenticação (JWT)
 
 A autenticação é **stateless** e baseada em **JSON Web Tokens (JWT)**.
-1.  O cliente envia as credenciais (e-mail e senha) para o endpoint `POST /api/auth/login`.
-2.  O servidor valida as credenciais e, se corretas, retorna um token JWT.
-3.  O cliente deve armazenar este token e enviá-lo no cabeçalho `Authorization` em todas as requisições subsequentes a endpoints protegidos.
+
+1. O cliente envia as credenciais (e-mail e senha) para o endpoint `POST /api/auth/login`.
+2. O servidor valida as credenciais e, se corretas, retorna um token JWT.
+3. O cliente deve armazenar este token e enviá-lo no cabeçalho `Authorization` em todas as requisições subsequentes a endpoints protegidos.
+
     ```
     Authorization: Bearer <seu_token_jwt>
     ```
@@ -157,4 +168,5 @@ Toda a infraestrutura da aplicação é definida como código, garantindo um amb
 * **Tilt (`Tiltfile`):** O `Tiltfile` na raíz do projeto é o script que orquestra a construção das imagens e a aplicação dos manifestos Kubernetes, unificando todo o ambiente de desenvolvimento.
 
 ## Detalhes do Frontend
+
 {A fazer}

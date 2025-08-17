@@ -5,10 +5,10 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.13</version>
+        <version>3.5.4</version>
         <relativePath/>
     </parent>
-    <groupId>com.IgorAlan</groupId>
+    <groupId>com.igoralan</groupId>
     <artifactId>jobportal</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>jobportal</name>
