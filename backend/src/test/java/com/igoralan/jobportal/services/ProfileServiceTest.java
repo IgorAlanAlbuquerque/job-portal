@@ -4,6 +4,7 @@ import com.igoralan.jobportal.exception.ResourceNotFoundException;
 import com.igoralan.jobportal.mapper.UserMapper;
 import com.igoralan.jobportal.models.*;
 import com.igoralan.jobportal.models.dtos.UpdateJobSeekerProfileDto;
+import com.igoralan.jobportal.models.dtos.UpdateRecruiterProfileDto;
 import com.igoralan.jobportal.models.dtos.UserProfileDto;
 import com.igoralan.jobportal.repository.JobSeekerProfileRepository;
 import com.igoralan.jobportal.repository.RecruiterProfileRepository;
@@ -178,5 +179,36 @@ class ProfileServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> {
             profileService.getCurrentJobSeekerProfile();
         });
+    }
+
+    @Test
+    void updateRecruiterProfile_shouldUpdateAndReturnDto() {
+        UpdateRecruiterProfileDto updateDto = new UpdateRecruiterProfileDto(
+                "John Updated", "Doe", "São Paulo", "SP", "Brasil", "http://example.com/new-photo.jpg");
+
+        UserProfileDto expectedResponseDto = new UserProfileDto(
+                1L,
+                "user@test.com",
+                "John Updated",
+                "Doe",
+                "São Paulo",
+                "SP",
+                "http://example.com/new-photo.jpg",
+                "Recruiter");
+
+        RecruiterProfile existingProfile = new RecruiterProfile(recruiterUser);
+
+        when(userService.getCurrentAuthenticatedUser()).thenReturn(recruiterUser);
+        when(recruiterProfileRepository.findById(recruiterUser.getUserId())).thenReturn(Optional.of(existingProfile));
+        when(recruiterProfileRepository.save(any(RecruiterProfile.class))).thenReturn(existingProfile);
+        when(userMapper.toUserProfileDto(any(RecruiterProfile.class))).thenReturn(expectedResponseDto);
+
+        UserProfileDto actualResponseDto = profileService.updateRecruiterProfile(updateDto);
+
+        assertThat(actualResponseDto).isEqualTo(expectedResponseDto);
+
+        verify(recruiterProfileRepository).findById(recruiterUser.getUserId());
+        verify(userMapper).updateRecruiterProfileFromDto(updateDto, existingProfile);
+        verify(recruiterProfileRepository).save(existingProfile);
     }
 }

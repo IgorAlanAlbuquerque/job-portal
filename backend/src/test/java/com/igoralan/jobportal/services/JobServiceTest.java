@@ -1,13 +1,20 @@
 package com.igoralan.jobportal.services;
 
+import com.igoralan.jobportal.elasticsearch.document.JobDocument;
 import com.igoralan.jobportal.exception.AccessDeniedException;
 import com.igoralan.jobportal.mapper.JobMapper;
 import com.igoralan.jobportal.models.*;
 import com.igoralan.jobportal.models.dtos.CreateJobDto;
 import com.igoralan.jobportal.models.dtos.JobDetailDto;
+import com.igoralan.jobportal.models.dtos.JobSummaryDto;
+import com.igoralan.jobportal.models.dtos.RecruiterJobsDto;
 import com.igoralan.jobportal.models.dtos.UpdateJobDto;
 import com.igoralan.jobportal.repository.JobRepository;
 import com.igoralan.jobportal.repository.JobSeekerApplyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -223,5 +231,75 @@ class JobServiceTest {
         assertThrows(AccessDeniedException.class, () -> {
             jobService.getJobApplicants(jobId);
         });
+    }
+
+    @Test
+    void getRecruiterJobs_shouldReturnJobsForCurrentUser() {
+        when(userService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
+
+        JobLocation location = new JobLocation();
+        JobCompany company = new JobCompany();
+
+        RecruiterJobsDto dto1 = new RecruiterJobsDto(1L, 10L, "Vaga de Java", location, company);
+        RecruiterJobsDto dto2 = new RecruiterJobsDto(2L, 15L, "Vaga de Python", location, company);
+        List<RecruiterJobsDto> expectedJobs = List.of(dto1, dto2);
+
+        when(jobRepository.getRecruiterJobs(mockUser.getUserId())).thenReturn(expectedJobs);
+
+        List<RecruiterJobsDto> actualJobs = jobService.getRecruiterJobs();
+
+        assertThat(actualJobs).isEqualTo(expectedJobs);
+        verify(jobRepository).getRecruiterJobs(mockUser.getUserId());
+    }
+
+    @Test
+    void getAll_shouldReturnAllJobs() {
+        List<Job> expectedJobs = List.of(new Job(), new Job());
+        when(jobRepository.findAll()).thenReturn(expectedJobs);
+
+        List<Job> actualJobs = jobService.getAll();
+
+        assertThat(actualJobs).hasSize(2);
+        assertThat(actualJobs).isEqualTo(expectedJobs);
+        verify(jobRepository).findAll();
+    }
+
+    @Test
+    void searchJobs_shouldReturnPageOfSummaries() {
+        String keyword = "Java";
+        String location = "São Paulo";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        JobDocument doc1 = new JobDocument();
+        JobDocument doc2 = new JobDocument();
+        List<JobDocument> documents = List.of(doc1, doc2);
+        Page<JobDocument> resultsPage = new PageImpl<>(documents, pageable, documents.size());
+
+        when(jobSearchRepository.findByJobTitleContainsOrDescriptionContains(keyword, location, pageable))
+                .thenReturn(resultsPage);
+
+        when(jobMapper.toSummaryDto(any(JobDocument.class)))
+                .thenReturn(new JobSummaryDto(null, null, null, null, null, null));
+
+        Page<JobSummaryDto> dtoPage = jobService.searchJobs(keyword, location, pageable);
+
+        assertThat(dtoPage).isNotNull();
+        assertThat(dtoPage.getContent()).hasSize(2);
+        verify(jobMapper, times(2)).toSummaryDto(any(JobDocument.class));
+    }
+
+    @Test
+    void getJobDetails_shouldThrowResourceNotFoundException_whenJobNotFound() {
+        Long nonExistentJobId = 999L;
+
+        when(jobRepository.findById(nonExistentJobId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            jobService.getJobDetails(nonExistentJobId);
+        });
+
+        verify(jobSeekerService, never()).getSavedJobIdsForCurrentUser();
+        verify(jobSeekerService, never()).getAppliedJobIdsForCurrentUser();
+        verify(jobMapper, never()).toDetailDto(any(), anyBoolean(), anyBoolean());
     }
 }
