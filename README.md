@@ -143,6 +143,7 @@ O RabbitMQ é usado para desacoplar tarefas demoradas da requisição principal,
 * **AssertJ**: Para asserções fluentes e legíveis.
 * **Spring Test & MockMvc**: Para testes de integração da camada web.
 * **Testcontainers**: Para testes de integração com instâncias Docker reais dos nossos serviços de dados.
+* **Jacoco**: Para controle sobre a cobertura dos testes.
 
 #### Como Rodar os Testes
 
