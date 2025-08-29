@@ -90,7 +90,7 @@ public class JobService {
 
     public Page<JobSummaryDto> searchJobs(String keyword, String location, Pageable pageable) {
         Page<JobDocument> resultsPage = jobSearchRepository
-                .findByJobTitleContainsOrDescriptionContains(keyword, keyword, pageable);
+                .findByJobTitleContainsOrDescriptionContains(keyword, location, pageable);
         return resultsPage.map(jobMapper::toSummaryDto);
     }
 
