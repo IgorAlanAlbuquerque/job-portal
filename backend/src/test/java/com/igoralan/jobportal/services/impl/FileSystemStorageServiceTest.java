@@ -15,10 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -163,5 +165,79 @@ class FileSystemStorageServiceTest {
         assertThrows(StorageException.class, () -> {
             storageService.loadResume(userId);
         });
+    }
+
+    @Test
+    void loadResume_shouldThrowResourceNotFoundException_whenProfileNotFound() {
+        Long userId = 999L;
+        when(jobSeekerProfileRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            storageService.loadResume(userId);
+        });
+    }
+
+    @Test
+    void saveFile_shouldThrowStorageException_onIOException() throws IOException {
+        when(userService.getCurrentAuthenticatedUser()).thenReturn(mockUser);
+        MockMultipartFile file = new MockMultipartFile("resume", "resume.pdf", "application/pdf",
+                "test data".getBytes());
+
+        when(jobSeekerProfileRepository.findById(mockUser.getUserId())).thenReturn(Optional.of(new JobSeekerProfile()));
+
+        Path userResumeDir = tempDir.resolve("resumes").resolve(String.valueOf(mockUser.getUserId()));
+        Files.createDirectories(userResumeDir);
+        userResumeDir.toFile().setReadOnly();
+
+        assertThrows(StorageException.class, () -> {
+            storageService.saveResume(file);
+        });
+
+        userResumeDir.toFile().setWritable(true);
+    }
+
+    @Test
+    void init_shouldThrowStorageException_onIOException() throws IOException {
+        Path uploadAsFile = tempDir.resolve("upload-dir-as-file");
+        Files.createFile(uploadAsFile);
+
+        ReflectionTestUtils.setField(storageService, "uploadDir", uploadAsFile.toString());
+
+        assertThrows(StorageException.class, () -> {
+            storageService.init();
+        });
+    }
+
+    @Test
+    void loadResume_shouldThrowResourceNotFoundException_whenFilenameIsBlank() {
+        Long userId = 1L;
+        JobSeekerProfile mockProfile = new JobSeekerProfile();
+        mockProfile.setResume("   ");
+        when(jobSeekerProfileRepository.findById(userId)).thenReturn(Optional.of(mockProfile));
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            storageService.loadResume(userId);
+        });
+    }
+
+    @Test
+    void loadResume_shouldThrowStorageException_whenFileIsNotReadable() throws IOException {
+        String filename = "unreadable-resume.pdf";
+        Long userId = 1L;
+        JobSeekerProfile mockProfile = new JobSeekerProfile();
+        mockProfile.setResume(filename);
+        when(jobSeekerProfileRepository.findById(userId)).thenReturn(Optional.of(mockProfile));
+
+        Path resumeDir = tempDir.resolve("resumes").resolve(String.valueOf(userId));
+        Files.createDirectories(resumeDir);
+        Path file = Files.write(resumeDir.resolve(filename), "pdf content".getBytes());
+
+        file.toFile().setReadable(false);
+
+        assertThrows(StorageException.class, () -> {
+            storageService.loadResume(userId);
+        });
+
+        file.toFile().setReadable(true);
     }
 }
