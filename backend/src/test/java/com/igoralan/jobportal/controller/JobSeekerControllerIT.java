@@ -27,68 +27,79 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class JobSeekerControllerIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockitoBean
-    private JobSeekerService jobSeekerService;
+        @MockitoBean
+        private JobSeekerService jobSeekerService;
 
-    @Test
-    @WithMockUser(authorities = "JobSeeker")
-    void applyToJob_whenUserIsJobSeeker_shouldReturnCreated() throws Exception {
-        long jobId = 1L;
-        doNothing().when(jobSeekerService).applyToJob(jobId);
+        @Test
+        @WithMockUser(authorities = "JobSeeker")
+        void applyToJob_whenUserIsJobSeeker_shouldReturnCreated() throws Exception {
+                long jobId = 1L;
+                doNothing().when(jobSeekerService).applyToJob(jobId);
 
-        mockMvc.perform(post("/api/job-seeker/apply/{jobId}", jobId))
-                .andExpect(status().isCreated());
+                mockMvc.perform(post("/api/job-seeker/apply/{jobId}", jobId))
+                                .andExpect(status().isCreated());
 
-        verify(jobSeekerService).applyToJob(jobId);
-    }
+                verify(jobSeekerService).applyToJob(jobId);
+        }
 
-    @Test
-    @WithMockUser(authorities = "Recruiter")
-    void applyToJob_whenUserIsNotJobSeeker_shouldReturnForbidden() throws Exception {
-        long jobId = 1L;
+        @Test
+        @WithMockUser(authorities = "Recruiter")
+        void applyToJob_whenUserIsNotJobSeeker_shouldReturnForbidden() throws Exception {
+                long jobId = 1L;
 
-        mockMvc.perform(post("/api/job-seeker/apply/{jobId}", jobId))
-                .andExpect(status().isForbidden());
+                mockMvc.perform(post("/api/job-seeker/apply/{jobId}", jobId))
+                                .andExpect(status().isForbidden());
 
-        verify(jobSeekerService, never()).applyToJob(anyLong());
-    }
+                verify(jobSeekerService, never()).applyToJob(anyLong());
+        }
 
-    @Test
-    @WithMockUser(authorities = "JobSeeker")
-    void saveJob_whenUserIsJobSeeker_shouldReturnCreated() throws Exception {
-        long jobId = 2L;
-        doNothing().when(jobSeekerService).saveJob(jobId);
+        @Test
+        @WithMockUser(authorities = "JobSeeker")
+        void saveJob_whenUserIsJobSeeker_shouldReturnCreated() throws Exception {
+                long jobId = 2L;
+                doNothing().when(jobSeekerService).saveJob(jobId);
 
-        mockMvc.perform(post("/api/job-seeker/save/{jobId}", jobId))
-                .andExpect(status().isCreated());
+                mockMvc.perform(post("/api/job-seeker/save/{jobId}", jobId))
+                                .andExpect(status().isCreated());
 
-        verify(jobSeekerService).saveJob(jobId);
-    }
+                verify(jobSeekerService).saveJob(jobId);
+        }
 
-    @Test
-    @WithMockUser(authorities = "JobSeeker")
-    void getSavedJobs_whenUserIsJobSeeker_shouldReturnOkAndListOfJobs() throws Exception {
-        JobSummaryDto job1 = new JobSummaryDto(1L, "Engenheiro de Software", "Tech Corp", "São Paulo", "SP",
-                LocalDateTime.now());
-        JobSummaryDto job2 = new JobSummaryDto(2L, "Analista de Dados", "Data Inc", "Rio de Janeiro", "RJ",
-                LocalDateTime.now());
-        List<JobSummaryDto> savedJobsList = List.of(job1, job2);
+        @Test
+        @WithMockUser(authorities = "JobSeeker")
+        void getSavedJobs_whenUserIsJobSeeker_shouldReturnOkAndListOfJobs() throws Exception {
+                JobSummaryDto job1 = new JobSummaryDto(1L, "Engenheiro de Software", "Tech Corp", "São Paulo", "SP",
+                                LocalDateTime.now());
+                JobSummaryDto job2 = new JobSummaryDto(2L, "Analista de Dados", "Data Inc", "Rio de Janeiro", "RJ",
+                                LocalDateTime.now());
+                List<JobSummaryDto> savedJobsList = List.of(job1, job2);
 
-        when(jobSeekerService.getSavedJobsForCurrentUser()).thenReturn(savedJobsList);
+                when(jobSeekerService.getSavedJobsForCurrentUser()).thenReturn(savedJobsList);
 
-        mockMvc.perform(get("/api/job-seeker/saved-jobs"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].jobTitle").value("Engenheiro de Software"))
-                .andExpect(jsonPath("$[1].companyName").value("Data Inc"));
-    }
+                mockMvc.perform(get("/api/job-seeker/saved-jobs"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$", hasSize(2)))
+                                .andExpect(jsonPath("$[0].jobTitle").value("Engenheiro de Software"))
+                                .andExpect(jsonPath("$[1].companyName").value("Data Inc"));
+        }
 
-    @Test
-    void getSavedJobs_whenUserIsUnauthenticated_shouldReturnForbidden() throws Exception {
-        mockMvc.perform(get("/api/job-seeker/saved-jobs"))
-                .andExpect(status().isForbidden());
-    }
+        @Test
+        void getSavedJobs_whenUserIsUnauthenticated_shouldReturnUnauthorized() throws Exception {
+                mockMvc.perform(get("/api/job-seeker/saved-jobs"))
+                                .andExpect(status().isUnauthorized());
+
+                verify(jobSeekerService, never()).getSavedJobsForCurrentUser();
+        }
+
+        @Test
+        @WithMockUser(authorities = "Recruiter")
+        void getSavedJobs_whenUserIsAuthenticatedWithoutPermission_shouldReturnForbidden() throws Exception {
+                mockMvc.perform(get("/api/job-seeker/saved-jobs"))
+                                .andExpect(status().isForbidden());
+
+                verify(jobSeekerService, never()).getSavedJobsForCurrentUser();
+        }
 }
