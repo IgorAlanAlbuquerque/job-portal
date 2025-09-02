@@ -26,7 +26,7 @@ jobs:
           java-version: '21'
           cache: maven
       - name: Run unit tests
-        run: mvn -B -ntp -DskipITs test
+        run: mvn -B -ntp test
 
       - name: Upload surefire reports
         if: always()
@@ -84,7 +84,7 @@ jobs:
           cache: maven
 
       - name: Run integration tests (Failsafe)
-        run: mvn -B -ntp -DskipTests -DskipITs=false verify
+        run: mvn -B -ntp -DskipTests -DskipITs=false -Djacoco.skip=true verify
 
       - name: Upload failsafe & jacoco reports
         if: always()

@@ -176,6 +176,7 @@
                         <exclude>**/models/*.class</exclude>
                         <exclude>**/exception/**</exclude>
                         <exclude>**/mapper/*MapperImpl.class</exclude>
+                        <exclude>**/elasticsearch/document/**</exclude>
                     </excludes>
                 </configuration>
 
@@ -219,12 +220,25 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId> <executions>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <excludedGroups>integration</excludedGroups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <groups>integration</groups>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
